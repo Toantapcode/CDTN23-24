@@ -1,6 +1,6 @@
-import HomePage from "../component/pages/HomePage";
-import LoginPage from "../component/pages/LoginPage";
-import RegisterPage from "../component/pages/RegisterPage";
+import HomePage from "../pages/HomePage";
+import LoginPage from "../pages/LoginPage";
+import RegisterPage from "../pages/RegisterPage";
 
 const publicRoutes = [
     { path: "/", component: HomePage },

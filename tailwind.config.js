@@ -2,7 +2,11 @@
 module.exports = {
   content: ["./src/**/*.{html,js,jsx}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily:{
+        pacifico: ['Pacifico','sans-serif'],
+      }
+    },
   },
   plugins: [],
 }
