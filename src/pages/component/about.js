@@ -2,7 +2,7 @@ import imgAbout from '../../assets/image/about.jpg'
 
 export default function About() {
     return (
-        <div className="bg-gray-100 py-16">
+        <div className="bg-gray-100  wow animate__animated animate__fadeInLeft">
             <div className="container mx-auto px-6">
                 <div className="gap-element" style={{ display: 'block', height: 'auto', paddingTop: '60px' }}></div>
                 <div className="flex flex-col items-center text-center mb-12">

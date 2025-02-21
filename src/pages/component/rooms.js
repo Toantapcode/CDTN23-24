@@ -12,11 +12,11 @@ export default function Rooms() {
     return (
         <div className="bg-gray-50 py-12">
             <div className="container mx-auto px-6">
-                <h1 className="text-5xl font-bold text-gray-900 flex items-center">
+                <h1 className="text-5xl font-bold text-gray-900 flex items-center wow animate__animated animate__fadeInLeft">
                     <span className="border-r-8 border-yellow-600 pr-4 mr-4 font-pacifico">Loại phòng</span>
                     <span className="text-yellow-600 text-3xl ">Các phòng của chúng tôi</span>
                 </h1>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 wow animate__animated animate__fadeInDown">
                     <div className="bg-white p-6 rounded-lg shadow-lg">
                         <img
                             src={room1}
