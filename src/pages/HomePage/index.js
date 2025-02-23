@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import heroImage1 from '../../assets/image/hero1.jpg';
+import heroImage1 from '../../assets/image/slide1.jpg';
 import heroImage2 from '../../assets/image/hero2.jpg';
 import heroImage3 from '../../assets/image/hero3.webp';
 import Header from '../component/header';

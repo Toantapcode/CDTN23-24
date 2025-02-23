@@ -4,6 +4,7 @@ import RegisterPage from "../pages/RegisterPage";
 import RoomsPage from "../pages/RoomsPage";
 import IntroducePage from "../pages/IntroducePage";
 import Admin from "../pages/Admin";
+import UserProfile from "../pages/UserProfile";
 
 const publicRoutes = [
     { path: "/", component: HomePage },
@@ -11,10 +12,12 @@ const publicRoutes = [
     { path: "/register", component: RegisterPage },
     { path: "/rooms", component: RoomsPage },
     { path: "/introduce", component: IntroducePage },
+    { path: "/userprofile", component: UserProfile },
+    { path: "/admin", component: Admin },
+
 ];
 
 const privateRoutes = [
-    { path: "/admin", component: Admin },
 
 ];
 
