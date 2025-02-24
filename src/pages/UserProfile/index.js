@@ -30,7 +30,6 @@ const UserProfile = () => {
         <div className="flex">
           <Sidebar onMenuClick={setCurrentContent} />
           <div className="flex-1 p-6 ml-64 mt-16">
-            {/* Giới hạn độ rộng và căn giữa renderContent */}
             <div className="max-w-4xl w-full rounded-[16px] bg-white mx-auto">
               {renderContent()}
             </div>

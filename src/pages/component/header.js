@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "../../assets/image/logo.png";
+import Avatar from "./avatar";
 
 export default function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
+    const token = localStorage.getItem('Token: ');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -15,6 +19,14 @@ export default function Header() {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
+
+    const handleAvatarClick = () => {
+        if (token) {
+            navigate('/userprofile');
+        } else {
+            navigate('/login');
+        }
+    };
 
     return (
         <header
@@ -30,12 +42,13 @@ export default function Header() {
                         />
                     </div>
                 </a>
-                <nav className={`flex space-x-4 uppercase font-bold text-xl transition-all duration-300 ${isScrolled ? "translate-y-[-42px]" : "translate-y-[-40px]"}`}>
+                <nav className={`flex space-x-4 uppercase font-bold text-xl transition-all duration-300 ${isScrolled ? "translate-y-[-42px]" : "translate-y-[-37px]"}`}>
                     <a href="/" className="text-yellow-800 hover:text-yellow-600">Trang chủ</a>
                     <a href="introduce" className="text-yellow-800 hover:text-yellow-600">Giới thiệu</a>
                     <a href="rooms" className="text-yellow-800 hover:text-yellow-600">Phòng</a>
                     <a href="" className="text-yellow-800 hover:text-yellow-600">Dịch vụ</a>
                     <a href="#" className="text-yellow-800 hover:text-yellow-600">Liên hệ</a>
+                    <a onClick={handleAvatarClick} className="mt-[-4px]"><Avatar /></a>
                 </nav>
             </div>
         </header>

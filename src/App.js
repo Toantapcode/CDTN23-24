@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import WOW from 'wow.js';
 import 'animate.css';
 
+
 function App() {
   useEffect(() => {
     new WOW().init();

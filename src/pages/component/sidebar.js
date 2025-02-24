@@ -56,7 +56,8 @@ const Sidebar = ({ onMenuClick }) => {
                         Đánh giá ứng dụng
                     </Menu.Item>
                     <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={() => {
-                        localStorage.removeItem("token");
+                        localStorage.removeItem('Token: ');
+                        localStorage.removeItem('User: ');
                         navigate("/login")
                     }}>
                         Đăng xuất

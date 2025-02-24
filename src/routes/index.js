@@ -3,8 +3,10 @@ import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import RoomsPage from "../pages/RoomsPage";
 import IntroducePage from "../pages/IntroducePage";
-import Admin from "../pages/Admin";
+import Admin from "../Admin"
 import UserProfile from "../pages/UserProfile";
+import Dashboard from "../Admin/pages/Dashboard";
+
 
 const publicRoutes = [
     { path: "/", component: HomePage },
@@ -14,6 +16,7 @@ const publicRoutes = [
     { path: "/introduce", component: IntroducePage },
     { path: "/userprofile", component: UserProfile },
     { path: "/admin", component: Admin },
+    { path: "/dashboard", component: Dashboard },
 
 ];
 
