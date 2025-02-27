@@ -3,6 +3,7 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import Rooms from './pages/RoomsPage'
+import UserManagement from './pages/UserManagement';
 
 export default function Admin() {
     const [content, setContent] = useState('dashboard');
@@ -13,8 +14,8 @@ export default function Admin() {
                 return <Dashboard />;
             // case 'front-desk':
             //     return <FrontDesk />;
-            // case 'guest':
-            //     return <Guest />;
+            case 'usermanagement':
+                return <UserManagement />;
             case 'rooms':
                 return <Rooms />;
             // case 'deal':

@@ -22,8 +22,8 @@ const Sidebar = ({ onMenuClick }) => {
             icon: <DesktopOutlined />,
         },
         {
-            key: 'guest',
-            label: 'Guest',
+            key: 'usermanagement',
+            label: 'Quản lý nhân sự',
             icon: <UserOutlined />,
         },
         {
