@@ -30,9 +30,6 @@ const ProfileContent = () => {
             console.log(values);
             console.log(userID);
             await axiosInstance.put(`/user/updateInfo/${userID}`, values);
-            console.log(values);
-            console.log(userID);
-            console.log(typeof (userID));
             message.success('Cập nhật thành công!');
             setModalVisible(false);
         } catch (error) {

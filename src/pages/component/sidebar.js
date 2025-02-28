@@ -10,6 +10,7 @@ import {
     LogoutOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
+import axiosInstance from '../../request';
 
 const Sidebar = ({ onMenuClick }) => {
     const [selectedKey, setSelectedKey] = useState('profile');
@@ -18,6 +19,18 @@ const Sidebar = ({ onMenuClick }) => {
         setSelectedKey(e.key);
         onMenuClick(e.key);
     };
+
+    const handleLogout = async () => {
+        try {
+            // await axiosInstance.post('/auth/logout');
+            localStorage.removeItem('Token: ');
+            localStorage.removeItem('User: ');
+            window.location.href = '/login';
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    };    
+
     const navigate = useNavigate();
 
     return (
@@ -55,11 +68,7 @@ const Sidebar = ({ onMenuClick }) => {
                     <Menu.Item key="review" icon={<StarOutlined />}>
                         Đánh giá ứng dụng
                     </Menu.Item>
-                    <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={() => {
-                        localStorage.removeItem('Token: ');
-                        localStorage.removeItem('User: ');
-                        navigate("/login")
-                    }}>
+                    <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
                         Đăng xuất
                     </Menu.Item>
                 </Menu.ItemGroup>
