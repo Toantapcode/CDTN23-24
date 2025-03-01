@@ -1,39 +1,59 @@
-import React from 'react';
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+import { useState, useEffect } from "react";
+import { Select } from "antd";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import axiosInstance from "../../request";
 
 const OccupancyStatistics = () => {
-  const data = {
-    labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
-    datasets: [
-      {
-        label: 'Occupancy Rate',
-        data: [35, 50, 75, 100, 80, 60, 40, 50, 60, 70],
-        backgroundColor: 'lightblue',
-      },
-    ],
-  };
+    const [year, setYear] = useState(new Date().getFullYear());
+    const [data, setData] = useState([]);
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axiosInstance.get("/booking/all");
+                const bookings = response.bookingList || [];
+                
+                // Lọc dữ liệu theo năm
+                const yearlyData = Array(12).fill(0).map((_, index) => {
+                    const month = index + 1;
+                    const occupancy = bookings.filter(b => 
+                        new Date(b.checkInDate).getFullYear() === year &&
+                        new Date(b.checkInDate).getMonth() + 1 === month
+                    ).length;
+                    return { name: `Tháng ${month}`, occupancy };
+                });
+                
+                setData(yearlyData);
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu:", error);
+                setData([]);
+            }
+        };
+        
+        fetchData();
+    }, [year]);
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: 'Occupancy Statistics',
-      },
-    },
-  };
-
-  return (
-    <div className="bg-white p-4 rounded-lg shadow">
-      <Bar options={options} data={data} />
-    </div>
-  );
+    return (
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-gray-700">Thống kê lượng đặt phòng</h2>
+                <Select value={year} onChange={setYear} className="w-32">
+                    {[...Array(20)].map((_, i) => {
+                        const y = new Date().getFullYear() - i;
+                        return <Select.Option key={y} value={y}>{y}</Select.Option>;
+                    })}
+                </Select>
+            </div>
+            <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={data}>
+                    <XAxis dataKey="name" />
+                    <YAxis allowDecimals={false} />
+                    <Tooltip formatter={(value) => [`${value}`, "Số lượng đặt phòng"]} />
+                    <Bar dataKey="occupancy" fill="#3498db" />
+                </BarChart>
+            </ResponsiveContainer>
+        </div>
+    );
 };
 
 export default OccupancyStatistics;
