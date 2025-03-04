@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Space, Tag, Pagination, Select, Input, Modal, Form } from "antd";
+import { Table, Button, Space, Tag, Pagination, Select, Input, Modal, Form, message } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import axiosInstance from '../../request';
+import { toast, ToastContainer } from 'react-toastify';
 
 const Usermanagement = () => {
     const [allUsers, setAllUsers] = useState([]);
@@ -15,6 +16,7 @@ const Usermanagement = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
     const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [form] = Form.useForm();
 
     const columns = [
@@ -66,7 +68,7 @@ const Usermanagement = () => {
                 setTotalItems(response.total);
             }
         } catch (error) {
-            console.error('Error fetching users:', error);
+            toast.error('Lỗi khi lấy danh sách người dùng!');
         } finally {
             setLoading(false);
         }
@@ -134,25 +136,27 @@ const Usermanagement = () => {
     const handleDelete = async (id) => {
         try {
             await axiosInstance.delete(`/user/delete/${id}`);
+            toast.success('Xóa người dùng thành công!');
             fetchUsers();
         } catch (error) {
-            console.error('Error deleting user:', error);
+            toast.error('Lỗi khi xóa người dùng!');
         }
     };
 
     const handleOk = async () => {
         try {
             const values = await form.validateFields();
-            console.log("values: ", values)
             if (selectedUser) {
                 await axiosInstance.put(`/user/updateInfo/${selectedUser.id}`, values);
+                toast.success('Cập nhật người dùng thành công!')
             } else {
                 await axiosInstance.post('auth/register', values);
+                toast.success('Thêm người dùng thành công!')
             }
             fetchUsers();
             setIsModalVisible(false);
         } catch (error) {
-            console.error('Error saving user:', error);
+            toast.error('Lỗi khi cập nhật người dùng:', error);
         }
     };
 
@@ -160,9 +164,45 @@ const Usermanagement = () => {
         setIsModalVisible(false);
     };
 
+    const handleDeleteMany = async () => {
+        if (selectedRowKeys.length === 0) {
+            toast.warning("Vui lòng chọn ít nhất một người dùng!");
+            return;
+        }
+
+        try {
+            await axiosInstance.delete('user/deleteMany', { data: selectedRowKeys });
+            toast.success("Xóa thành công!");
+            setSelectedRowKeys([]);
+            fetchUsers();
+        } catch (error) {
+            toast.error('Lỗi khi xóa nhiều người dùng!');
+        }
+    };
+
     return (
         <div className="pt-10 pr-10 pl-10">
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
             <h2 className="text-lg font-semibold mb-4">Quản lý người dùng</h2>
+            <Button
+                type="danger"
+                icon={<DeleteOutlined />}
+                onClick={handleDeleteMany}
+                disabled={selectedRowKeys.length === 0}
+                className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white mb-4"
+            >
+                Xóa đã chọn ({selectedRowKeys.length})
+            </Button>
             <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center">
                     <Select defaultValue="all" style={{ width: 120, marginRight: 8 }} onChange={handleFilterRole}>
@@ -184,6 +224,10 @@ const Usermanagement = () => {
                     total: totalItems,
                     onChange: handlePageChange,
                     position: ['bottomCenter'],
+                }}
+                rowSelection={{
+                    selectedRowKeys,
+                    onChange: setSelectedRowKeys,
                 }}
                 rowKey="id"
             />

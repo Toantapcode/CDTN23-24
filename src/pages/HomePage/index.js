@@ -26,11 +26,12 @@ const HomePage = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
       <Header />
-      <section className="bg-cover bg-center h-[96vh] flex items-center justify-center mt-[-50px] mb-[100px]"
+      <section className="relative bg-cover bg-center h-[96vh] flex items-center justify-center mt-[-50px] mb-[100px]"
         style={{ backgroundImage: `url(${heroImages[currentImageIndex]})` }}>
-        <div className="container mx-auto px-6 py-16 text-center">
-          <h1 className="text-7xl font-bold text-white mb-4">Chào mừng đến với LuxeStay</h1>
-          <p className="text-2xl text-white">Trải nghiệm sự đón tiếp tuyệt vời nhất của Hạ Long</p>
+        <div className="absolute inset-0 bg-black/50"></div>
+        <div className="relative container mx-auto px-6 py-16 text-center">
+          <h1 className="text-7xl font-bold text-white mb-4 drop-shadow-lg">Chào mừng đến với LuxeStay</h1>
+          <p className="text-2xl text-white drop-shadow-md">Trải nghiệm sự đón tiếp tuyệt vời nhất của Hạ Long</p>
         </div>
       </section>
       <About />

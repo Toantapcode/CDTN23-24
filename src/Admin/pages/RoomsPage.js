@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Space, Tag, Pagination, Select, Input, Modal, Form, Upload, message } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import axiosInstance from '../../request';
+import { toast, ToastContainer } from 'react-toastify';
 
 const RoomsPage = () => {
     const [allRooms, setAllRooms] = useState([]);
@@ -15,6 +16,7 @@ const RoomsPage = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
     const [selectedRoom, setSelectedRoom] = useState(null);
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [imageUrl, setImageUrl] = useState('');
     const [form] = Form.useForm();
 
@@ -128,10 +130,10 @@ const RoomsPage = () => {
                 },
             });
             setImageUrl(response);
-            message.success("Tải ảnh lên thành công!");
+            toast.success("Tải ảnh lên thành công!");
         } catch (error) {
-            message.error("Tải ảnh lên thất bại. Vui lòng thử lại.");
-            console.error("Upload error:", error);
+            toast.error("Tải ảnh lên thất bại. Vui lòng thử lại.");
+            toast.error("Upload error:", error);
         }
     };
 
@@ -172,18 +174,17 @@ const RoomsPage = () => {
 
     const handleOk = async () => {
         try {
-            const values = await form.validateFields(); 
+            const values = await form.validateFields();
             const payload = {
                 ...values,
                 image: imageUrl,
                 price: Number(values.price),
             };
-            console.log("vl: ", payload)
             await axiosInstance.post('/room/add', payload);
             message.success('Thêm phòng thành công!');
 
             setIsModalVisible(false);
-            fetchRooms(); // Refresh danh sách phòng
+            fetchRooms();
         } catch (error) {
             console.error('Error adding room:', error);
             message.error('Lỗi khi thêm phòng, vui lòng thử lại.');
@@ -194,9 +195,45 @@ const RoomsPage = () => {
         setIsModalVisible(false);
     };
 
+    const handleDeleteMany = async () => {
+        if (selectedRowKeys.length === 0) {
+            toast.warning("Vui lòng chọn ít nhất một người dùng!");
+            return;
+        }
+
+        try {
+            await axiosInstance.delete('room/deleteMany', { data: selectedRowKeys });
+            toast.success("Xóa thành công!");
+            setSelectedRowKeys([]);
+            fetchRooms();
+        } catch (error) {
+            toast.error('Lỗi khi xóa nhiều người dùng!');
+        }
+    };
+
     return (
         <div className="pt-10 pr-10 pl-10">
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
             <h2 className="text-lg font-semibold mb-4">Quản lý phòng</h2>
+            <Button
+                type="danger"
+                icon={<DeleteOutlined />}
+                onClick={handleDeleteMany}
+                disabled={selectedRowKeys.length === 0}
+                className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white mb-4"
+            >
+                Xóa đã chọn ({selectedRowKeys.length})
+            </Button>
             <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center">
                     <Select defaultValue="all" style={{ width: 150, marginRight: 8 }} onChange={handleFilterType}>
@@ -219,6 +256,10 @@ const RoomsPage = () => {
                     total: totalItems,
                     onChange: handlePageChange,
                     position: ['bottomCenter'],
+                }}
+                rowSelection={{
+                    selectedRowKeys,
+                    onChange: setSelectedRowKeys,
                 }}
                 rowKey="id"
             />

@@ -13,12 +13,12 @@ const Sidebar = ({ onMenuClick }) => {
     const menuItems = [
         {
             key: 'dashboard',
-            label: 'Dashboard',
+            label: 'Thông tin',
             icon: <DashboardOutlined />,
         },
         {
-            key: 'front-desk',
-            label: 'Front Desk',
+            key: 'booking',
+            label: 'Quản lý đặt phòng',
             icon: <DesktopOutlined />,
         },
         {
