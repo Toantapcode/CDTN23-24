@@ -6,6 +6,7 @@ import IntroducePage from "../pages/IntroducePage";
 import Admin from "../Admin"
 import UserProfile from "../pages/UserProfile";
 import Dashboard from "../Admin/pages/Dashboard";
+import BookingPage from "../pages/BookingPage";
 
 
 const publicRoutes = [
@@ -17,6 +18,7 @@ const publicRoutes = [
     { path: "/userprofile", component: UserProfile },
     { path: "/admin", component: Admin },
     { path: "/dashboard", component: Dashboard },
+    { path: "/bookingpage", component: BookingPage },
 
 ];
 

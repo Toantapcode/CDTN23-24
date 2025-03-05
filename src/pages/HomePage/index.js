@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import heroImage1 from '../../assets/image/slide1.jpg';
 import heroImage2 from '../../assets/image/hero2.jpg';
 import heroImage3 from '../../assets/image/hero3.webp';
@@ -10,6 +11,11 @@ import Footer from '../component/footer';
 
 const HomePage = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/rooms')
+  }
 
   const heroImages = [
     heroImage1,
@@ -31,7 +37,12 @@ const HomePage = () => {
         <div className="absolute inset-0 bg-black/50"></div>
         <div className="relative container mx-auto px-6 py-16 text-center">
           <h1 className="text-7xl font-bold text-white mb-4 drop-shadow-lg">Chào mừng đến với LuxeStay</h1>
-          <p className="text-2xl text-white drop-shadow-md">Trải nghiệm sự đón tiếp tuyệt vời nhất của Hạ Long</p>
+          <p className="text-2xl text-white drop-shadow-md mb-10">Trải nghiệm sự đón tiếp tuyệt vời nhất của Hạ Long</p>
+          <button className="mt-10 bg-white text-gray-800 font-semibold py-3 px-8 rounded-full hover:bg-gray-100 
+                           transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
+            onClick={handleClick}>
+            Đặt ngay
+          </button>
         </div>
       </section>
       <About />
