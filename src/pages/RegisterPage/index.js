@@ -11,6 +11,7 @@ function RegisterPage() {
     const [password, setPassword] = useState('');
     const [agreeTerms, setAgreeTerms] = useState(false);
     const [error, setError] = useState('');
+    const [isRegistered, setIsRegistered] = useState(false);
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
@@ -50,7 +51,6 @@ function RegisterPage() {
             return;
         }
 
-        console.log('1:', email, password, phone, name);
         try {
             const response = await axiosInstance.post('/auth/register', {
                 email,
@@ -58,44 +58,47 @@ function RegisterPage() {
                 phone,
                 name
             });
-
-            toast.success('Đăng ký thành công! Vui lòng đăng nhập.', {
-                position: 'top-right',
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: 'light',
-            });
-
+            await axiosInstance.get(`/auth/send-email-active/${email}`);
+            toast.success('Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.');
+            setIsRegistered(true);
         }
         catch (error) {
             if (error.response && error.response.data && error.response.data.message) {
-                toast.error(error.response.data.message, {
-                    position: 'top-right',
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: 'light',
-                });
+                toast.error(error.response.data.message);
             } else {
-                toast.error('Đăng ký thất bại. Vui lòng thử lại.', {
-                    position: 'top-right',
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: 'light',
-                });
+                toast.error('Đăng ký thất bại. Vui lòng thử lại.');
             }
         }
+    }
+    if (isRegistered) {
+        return (
+            <div className="min-h-screen w-full bg-cover bg-center flex items-center justify-center p-4"
+                style={{ backgroundImage: `url(${require('../../assets/image/bglogin.jpg')})` }}>
+                <div className="w-full max-w-4xl bg-black/20 backdrop-blur-sm rounded-2xl overflow-hidden shadow-2xl flex">
+                    <div className="flex-1 p-8 text-white flex flex-col items-center justify-center text-center">
+                        <a href='/'>
+                            <h1 className="text-6xl font-bold mb-4">LuxeStay</h1>
+                            <h2 className="text-3xl mb-4">Chào mừng quý khách</h2>
+                        </a>
+                    </div>
+                    <div className="flex-1 p-8">
+                        <div className="bg-white/10 backdrop-blur-md p-8 rounded-xl">
+                            <h2 className="text-3xl font-bold text-white mb-6">Xác minh email</h2>
+                            <p className="text-white mb-4">
+                                Một email xác minh đã được gửi đến <span className="font-bold">{email}</span>.
+                                Vui lòng kiểm tra hộp thư đến (và cả thư mục spam) để kích hoạt tài khoản của bạn.
+                            </p>
+                            <button
+                                onClick={() => (window.location.href = 'https://mail.google.com/')}
+                                className="w-full py-3 bg-black text-white rounded-lg hover:bg-black/80 transition-colors"
+                            >
+                                Tiến tới Gmail
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     return (

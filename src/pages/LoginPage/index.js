@@ -85,10 +85,10 @@ function LoginPage() {
                                 />
                             </div>
                             <div className="flex items-center justify-between text-white">
-                                <label className="flex items-center">
+                                {/* <label className="flex items-center">
                                     <input type="checkbox" className="mr-2" />
                                     Ghi nhớ mật khẩu
-                                </label>
+                                </label> */}
                                 <a href="#" className="hover:underline">Quên mật khẩu?</a>
                             </div>
                             <button
