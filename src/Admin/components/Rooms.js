@@ -23,7 +23,6 @@ const Rooms = () => {
             try {
                 const response = await axiosInstance.get("/booking/all");
                 setBookings(response.bookingList || []);
-                console.log('bo', response.bookingList)
             } catch (error) {
                 console.error("Lỗi khi lấy dữ liệu đặt phòng:", error);
                 setBookings([]);

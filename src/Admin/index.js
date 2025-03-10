@@ -4,6 +4,7 @@ import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import Rooms from './pages/RoomsPage'
 import UserManagement from './pages/UserManagement';
+import BookingPage from './pages/Booking';
 
 export default function Admin() {
     const [content, setContent] = useState('dashboard');
@@ -12,8 +13,8 @@ export default function Admin() {
         switch (content) {
             case 'dashboard':
                 return <Dashboard />;
-            // case 'front-desk':
-            //     return <FrontDesk />;
+            case 'booking':
+                return <BookingPage />;
             case 'usermanagement':
                 return <UserManagement />;
             case 'rooms':

@@ -11,7 +11,6 @@ const Overview = () => {
         const fetchBookings = async () => {
             try {
                 const response = await axiosInstance.get("/booking/all");
-                console.log("response: ", response.bookingList)
                 setBookings(response.bookingList || []);
             } catch (error) {
                 console.error("Lỗi khi lấy dữ liệu:", error);
