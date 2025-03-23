@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Space, Pagination, Input, Modal, Form, message } from "antd";
+import { Table, Button, Space, Pagination, Input, Modal, Form, message, Popconfirm } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import axiosInstance from '../../request';
 import { toast, ToastContainer } from 'react-toastify';
@@ -48,12 +48,22 @@ const BookingPage = () => {
                 <Space size="middle">
                     <Button type="primary" icon={<EyeOutlined />} onClick={() => handleView(record)}>Xem</Button>
                     <Button type="dashed" icon={<EditOutlined />} onClick={() => handleEdit(record)}>Sửa</Button>
-                    <Button
-                        type="danger"
-                        className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white"
-                        icon={<DeleteOutlined />}
-                        onClick={() => handleDelete(record.id)}>Xóa
-                    </Button>
+                    <Popconfirm
+                        title="Bạn có chắc chắn muốn xóa đặt phòng này?"
+                        description="Hành động này không thể hoàn tác!"
+                        onConfirm={() => handleDelete(record.id)}
+                        okText="Xóa"
+                        cancelText="Hủy"
+                        okButtonProps={{ danger: true }}
+                    >
+                        <Button
+                            type="danger"
+                            className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white"
+                            icon={<DeleteOutlined />}
+                        >
+                            Xóa
+                        </Button>
+                    </Popconfirm>
                 </Space>
             ),
         },
@@ -229,15 +239,24 @@ const BookingPage = () => {
                 pauseOnHover
             />
             <h2 className="text-lg font-semibold mb-4">Quản lý đặt phòng</h2>
-            <Button
-                type="danger"
-                icon={<DeleteOutlined />}
-                onClick={handleDeleteMany}
+            <Popconfirm
+                title="Bạn có chắc chắn muốn xóa các đặt phòng đã chọn?"
+                description={`Sẽ xóa ${selectedRowKeys.length} đặt phòng. Hành động này không thể hoàn tác!`}
+                onConfirm={handleDeleteMany}
+                okText="Xóa"
+                cancelText="Hủy"
+                okButtonProps={{ danger: true }}
                 disabled={selectedRowKeys.length === 0}
-                className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white mb-4"
             >
-                Xóa đã chọn ({selectedRowKeys.length})
-            </Button>
+                <Button
+                    type="danger"
+                    icon={<DeleteOutlined />}
+                    disabled={selectedRowKeys.length === 0}
+                    className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white mb-4"
+                >
+                    Xóa đã chọn ({selectedRowKeys.length})
+                </Button>
+            </Popconfirm>
             <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center">
                     <Input.Search
@@ -321,7 +340,7 @@ const BookingPage = () => {
                                 label="Mã code đặt phòng"
                                 name="bookingCode"
                             >
-                                <Input readOnly/>
+                                <Input readOnly />
                             </Form.Item>
                             <Form.Item label="Phòng" name="roomName">
                                 <Input readOnly />

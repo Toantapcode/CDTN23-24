@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaInstagram, FaFacebook, FaTwitter, FaGithub } from 'react-icons/fa';
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import axiosInstance from '../../request';
 
 function RegisterPage() {
@@ -58,15 +58,15 @@ function RegisterPage() {
                 phone,
                 name
             });
-            await axiosInstance.get(`/auth/send-email-active/${email}`);
             toast.success('Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.');
+            await axiosInstance.get(`/auth/send-email-active/${email}`);
             setIsRegistered(true);
         }
         catch (error) {
             if (error.response && error.response.data && error.response.data.message) {
                 toast.error(error.response.data.message);
             } else {
-                toast.error('Đăng ký thất bại. Vui lòng thử lại.');
+                toast.error('Email đã được đăng ký. Vui lòng sử dụng email khác hoặc đăng nhập!');
             }
         }
     }
@@ -104,6 +104,17 @@ function RegisterPage() {
     return (
         <div className="min-h-screen w-full bg-cover bg-center flex items-center justify-center p-4"
             style={{ backgroundImage: `url(${require('../../assets/image/bglogin.jpg')})` }}>
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggablex
+                pauseOnHover
+            />
             <div className="w-full max-w-4xl bg-black/20 backdrop-blur-sm rounded-2xl overflow-hidden shadow-2xl flex">
                 <div className="flex-1 p-8 text-white flex flex-col items-center justify-center text-center">
                     <a href='/'>

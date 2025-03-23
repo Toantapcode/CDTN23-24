@@ -12,6 +12,18 @@ function LoginPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!email) {
+            toast.warning('Email không được để trống!', { position: 'top-right', autoClose: 3000 });
+            return;
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            toast.warning('Email không hợp lệ!', { position: 'top-right', autoClose: 3000 });
+            return;
+        }
+        if (!password) {
+            toast.warning('Mật khẩu không được để trống!', { position: 'top-right', autoClose: 3000 });
+            return;
+        }
+
         try {
             const response = await axiosInstance.post('/auth/login', { email, password });
             const { token, user } = response;
@@ -95,7 +107,7 @@ function LoginPage() {
                                 type="submit"
                                 className="w-full py-3 bg-black text-white rounded-lg hover:bg-black/80 transition-colors"
                             >
-                                Login
+                                Đăng nhập
                             </button>
                             <p className="text-center text-white">
                                 Bạn chưa có tài khoản?{' '}

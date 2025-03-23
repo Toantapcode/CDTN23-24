@@ -23,7 +23,7 @@ const Sidebar = ({ onMenuClick }) => {
         },
         {
             key: 'usermanagement',
-            label: 'Quản lý nhân sự',
+            label: 'Quản lý tài khoản',
             icon: <UserOutlined />,
         },
         {
