@@ -6,6 +6,7 @@ import { toast, ToastContainer } from 'react-toastify';
 
 const RoomsPage = () => {
     const [allRooms, setAllRooms] = useState([]);
+    const [roomTypes, setRoomTypes] = useState([]);
     const [filteredRooms, setFilteredRooms] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
@@ -75,6 +76,7 @@ const RoomsPage = () => {
 
     useEffect(() => {
         fetchRooms();
+        fetchRoomTypes();
     }, []);
 
     useEffect(() => {
@@ -93,6 +95,18 @@ const RoomsPage = () => {
             console.error('Error fetching rooms:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchRoomTypes = async () => {
+        try {
+            const response = await axiosInstance.get('/roomType/all');
+            if (response && response.roomTypeList) {
+                setRoomTypes(response.roomTypeList);
+            }
+        } catch (error) {
+            console.error('Error fetching room types:', error);
+            toast.error('Lỗi khi tải danh sách loại phòng!');
         }
     };
 
@@ -295,11 +309,17 @@ const RoomsPage = () => {
                     <Form.Item label="Tên phòng" name="name" rules={[{ required: true, message: 'Vui lòng nhập tên phòng!' }]}>
                         <Input />
                     </Form.Item>
-                    <Form.Item label="Loại phòng" name="type" rules={[{ required: true, message: 'Vui lòng chọn Loại phòng!' }]}>
+                    <Form.Item
+                        label="Loại phòng"
+                        name="type"
+                        rules={[{ required: true, message: 'Vui lòng chọn loại phòng!' }]}
+                    >
                         <Select>
-                            <Select.Option value={1}>Gia đình</Select.Option>
-                            <Select.Option value={2}>Đôi</Select.Option>
-                            <Select.Option value={3}>VIP</Select.Option>
+                            {roomTypes.map((type) => (
+                                <Select.Option key={type.id} value={type.id}>
+                                    {type.name}
+                                </Select.Option>
+                            ))}
                         </Select>
                     </Form.Item>
                     <Form.Item label="Giá" name="price">

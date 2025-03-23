@@ -3,8 +3,10 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import Rooms from './pages/RoomsPage'
+import RoomTypePage from './pages/RoomTypePage';
 import UserManagement from './pages/UserManagement';
 import BookingPage from './pages/Booking';
+import ServicePage from './pages/Service';
 
 export default function Admin() {
     const [content, setContent] = useState('dashboard');
@@ -19,8 +21,10 @@ export default function Admin() {
                 return <UserManagement />;
             case 'rooms':
                 return <Rooms />;
-            // case 'deal':
-            //     return <Deal />;
+            case 'roomtypes':
+                return <RoomTypePage />;
+            case 'service':
+                return <ServicePage />;
             // case 'rate':
             //     return <Rate />;
             default:

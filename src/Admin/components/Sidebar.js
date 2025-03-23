@@ -22,37 +22,66 @@ const Sidebar = ({ onMenuClick }) => {
             icon: <DesktopOutlined />,
         },
         {
-            key: 'usermanagement',
-            label: 'Quản lý tài khoản',
+            key: 'user',
+            label: 'Tài khoản',
             icon: <UserOutlined />,
+            children: [
+                {
+                    key: 'usermanagement',
+                    label: 'Quản lý tài khoản',
+                },
+                {
+                    key: 'rolemanagement',
+                    label: 'Quản lý chức vụ',
+                },
+            ],
         },
         {
-            key: 'rooms',
-            label: 'Rooms',
+            key: 'room',
+            label: 'Phòng',
             icon: <HomeOutlined />,
+            children: [
+                {
+                    key: 'rooms',
+                    label: 'Quản lý phòng',
+                },
+                {
+                    key: 'roomtypes',
+                    label: 'Quản lý loại phòng',
+                },
+            ],
         },
         {
-            key: 'deal',
-            label: 'Deal',
+            key: 'service',
+            label: 'Dịch vụ',
             icon: <TagsOutlined />,
         },
         {
-            key: 'rate',
-            label: 'Rate',
+            key: 'invoice',
+            label: 'Hóa đơn',
             icon: <DollarCircleOutlined />,
         },
     ];
+
     return (
         <Menu
             mode="inline"
-            className="w-[12%] min-h-screen border-r-0"
+            className="w-[12%] min-h-screen rounded-lg shadow-lg mt-5 ml-10 pt-5 space-y-4 font-bold"
             onClick={({ key }) => onMenuClick(key)}
         >
-            {menuItems.map((item) => (
-                <Menu.Item key={item.key} icon={item.icon}>
-                    {item.label}
-                </Menu.Item>
-            ))}
+            {menuItems.map((item) =>
+                item.children ? (
+                    <Menu.SubMenu key={item.key} icon={item.icon} title={item.label}>
+                        {item.children.map((subItem) => (
+                            <Menu.Item key={subItem.key}>{subItem.label}</Menu.Item>
+                        ))}
+                    </Menu.SubMenu>
+                ) : (
+                    <Menu.Item key={item.key} icon={item.icon}>
+                        {item.label}
+                    </Menu.Item>
+                )
+            )}
         </Menu>
     );
 };
