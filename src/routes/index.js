@@ -17,15 +17,14 @@ const publicRoutes = [
     { path: "/rooms", component: RoomsPage },
     { path: "/introduce", component: IntroducePage },
     { path: "/userprofile", component: UserProfile },
-    { path: "/admin", component: Admin },
-    { path: "/dashboard", component: Dashboard },
     { path: "/bookingpage", component: BookingPage },
     { path: "/contact", component: ContactPage },
 
 ];
 
 const privateRoutes = [
-
+    { path: "/admin", component: Admin },
+    { path: "/dashboard", component: Dashboard },
 ];
 
 export { publicRoutes, privateRoutes };

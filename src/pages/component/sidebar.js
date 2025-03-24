@@ -20,18 +20,17 @@ const Sidebar = ({ onMenuClick }) => {
         onMenuClick(e.key);
     };
 
+    const navigate = useNavigate();
     const handleLogout = async () => {
         try {
-            // await axiosInstance.post('/auth/logout');
             localStorage.removeItem('Token: ');
             localStorage.removeItem('User: ');
-            window.location.href = '/login';
+            navigate('/login');
         } catch (error) {
             console.error('Error logging out:', error);
         }
-    };    
+    };
 
-    const navigate = useNavigate();
 
     return (
         <div className="bg-white h-screen shadow-md p-4 fixed left-0 top-16 w-64">
