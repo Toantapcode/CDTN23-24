@@ -10,6 +10,13 @@ function LoginPage() {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
+    const [isForgotPassword, setIsForgotPassword] = useState(false);
+    const [isOtpSent, setIsOtpSent] = useState(false);
+    const [recoveryEmail, setRecoveryEmail] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [rePassword, setRePassword] = useState('');
+    const [otp, setOtp] = useState('');
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!email) {
@@ -50,6 +57,67 @@ function LoginPage() {
         }
     };
 
+    const handleForgotPassword = async (e) => {
+        e.preventDefault();
+        if (!recoveryEmail) {
+            toast.warning('Vui lòng nhập email!', { position: 'top-right', autoClose: 3000 });
+            return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recoveryEmail)) {
+            toast.warning('Email không hợp lệ!', { position: 'top-right', autoClose: 3000 });
+            return;
+        }
+
+        try {
+            await axiosInstance.post(`/auth/verifyMail/${recoveryEmail}`);
+            toast.success('Đã gửi OTP tới email của bạn!', {
+                position: 'top-right',
+                autoClose: 3000
+            });
+            setIsOtpSent(true);
+        } catch (error) {
+            toast.error('Email không tồn tại trong hệ thống!', {
+                position: 'top-right',
+                autoClose: 3000
+            });
+        }
+    };
+
+    const handleResetPassword = async (e) => {
+        e.preventDefault();
+        if (!newPassword || !rePassword || !otp) {
+            toast.warning('Vui lòng điền đầy đủ thông tin!', { position: 'top-right', autoClose: 1500 });
+            return;
+        }
+        if (newPassword !== rePassword) {
+            toast.warning('Mật khẩu không khớp!', { position: 'top-right', autoClose: 1500 });
+            return;
+        }
+
+        try {
+            console.log(recoveryEmail, otp)
+            await axiosInstance.post(`/auth/changePassword/${recoveryEmail}/${otp}`, {
+                password: newPassword,
+                rePassword: rePassword
+            });
+            toast.success('Đặt lại mật khẩu thành công! Vui lòng đăng nhập.', {
+                position: 'top-right',
+                autoClose: 3000
+            });
+            setIsForgotPassword(false);
+            setIsOtpSent(false);
+            setRecoveryEmail('');
+            setNewPassword('');
+            setRePassword('');
+            setOtp('');
+        } catch (error) {
+            toast.error('OTP không hợp lệ hoặc có lỗi xảy ra!', {
+                position: 'top-right',
+                autoClose: 3000
+            });
+        }
+    };
+
     return (
         <div className="min-h-screen w-full bg-cover bg-center flex items-center justify-center p-4"
             style={{ backgroundImage: `url(${require('../../assets/image/bglogin.jpg')})` }}>
@@ -76,44 +144,110 @@ function LoginPage() {
                 </div>
                 <div className="flex-1 p-8">
                     <div className="bg-white/10 backdrop-blur-md p-8 rounded-xl">
-                        <h2 className="text-3xl font-bold text-white mb-6">Đăng nhập</h2>
-                        <form className="space-y-6" onSubmit={handleSubmit}>
-                            <div>
-                                <input
-                                    type="email"
-                                    placeholder="Email hoặc Số điện thoại"
-                                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-white/40"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <input
-                                    type="password"
-                                    placeholder="Mật khẩu"
-                                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-white/40"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                />
-                            </div>
-                            <div className="flex items-center justify-between text-white">
-                                {/* <label className="flex items-center">
-                                    <input type="checkbox" className="mr-2" />
-                                    Ghi nhớ mật khẩu
-                                </label> */}
-                                <a href="#" className="hover:underline">Quên mật khẩu?</a>
-                            </div>
-                            <button
-                                type="submit"
-                                className="w-full py-3 bg-black text-white rounded-lg hover:bg-black/80 transition-colors"
-                            >
-                                Đăng nhập
-                            </button>
-                            <p className="text-center text-white">
-                                Bạn chưa có tài khoản?{' '}
-                                <a href="/register" className="hover:underline">Đăng ký</a>
-                            </p>
-                        </form>
+                        {!isForgotPassword ? (
+                            <>
+                                <h2 className="text-3xl font-bold text-white mb-6">Đăng nhập</h2>
+                                <form className="space-y-6" onSubmit={handleSubmit}>
+                                    <div>
+                                        <input
+                                            type="email"
+                                            placeholder="Email hoặc Số điện thoại"
+                                            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-white/40"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <input
+                                            type="password"
+                                            placeholder="Mật khẩu"
+                                            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-white/40"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="flex items-center justify-between text-white">
+                                        <a href="#" onClick={() => setIsForgotPassword(true)} className="hover:underline">Quên mật khẩu?</a>
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="w-full py-3 bg-black text-white rounded-lg hover:bg-black/80 transition-colors"
+                                    >
+                                        Đăng nhập
+                                    </button>
+                                    <p className="text-center text-white">
+                                        Bạn chưa có tài khoản?{' '}
+                                        <a href="/register" className="hover:underline">Đăng ký</a>
+                                    </p>
+                                </form>
+                            </>
+                        ) : !isOtpSent ? (
+                            <>
+                                <h2 className="text-3xl font-bold text-white mb-6">Khôi phục mật khẩu</h2>
+                                <form className="space-y-6" onSubmit={handleForgotPassword}>
+                                    <div>
+                                        <input
+                                            type="email"
+                                            placeholder="Nhập email của bạn"
+                                            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-white/40"
+                                            value={recoveryEmail}
+                                            onChange={(e) => setRecoveryEmail(e.target.value)}
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="w-full py-3 bg-black text-white rounded-lg hover:bg-black/80 transition-colors"
+                                    >
+                                        Gửi OTP
+                                    </button>
+                                    <p className="text-center text-white">
+                                        <a href="#" onClick={() => setIsForgotPassword(false)} className="hover:underline">Quay lại đăng nhập</a>
+                                    </p>
+                                </form>
+                            </>
+                        ) : (
+                            <>
+                                <h2 className="text-3xl font-bold text-white mb-6">Thay đổi mật khẩu</h2>
+                                <form className="space-y-6" onSubmit={handleResetPassword}>
+                                    <div>
+                                        <input
+                                            type="password"
+                                            placeholder="Mật khẩu mới"
+                                            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-white/40"
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <input
+                                            type="password"
+                                            placeholder="Nhập lại mật khẩu"
+                                            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-white/40"
+                                            value={rePassword}
+                                            onChange={(e) => setRePassword(e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <input
+                                            type="text"
+                                            placeholder="Nhập mã OTP"
+                                            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-white/40"
+                                            value={otp}
+                                            onChange={(e) => setOtp(e.target.value)}
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="w-full py-3 bg-black text-white rounded-lg hover:bg-black/80 transition-colors"
+                                    >
+                                        Thay đổi mật khẩu
+                                    </button>
+                                    <p className="text-center text-white">
+                                        <a href="#" onClick={() => setIsForgotPassword(false)} className="hover:underline">Quay lại đăng nhập</a>
+                                    </p>
+                                </form>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

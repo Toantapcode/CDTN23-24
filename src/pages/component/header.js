@@ -42,13 +42,29 @@ export default function Header() {
                         />
                     </div>
                 </a>
-                <nav className={`flex space-x-4 uppercase font-bold text-xl transition-all duration-300 ${isScrolled ? "translate-y-[-42px]" : "translate-y-[-37px]"}`}>
+                <nav className={`flex space-x-4 uppercase font-bold text-xl transition-all duration-300 ${isScrolled ? "translate-y-[-37px]" : "translate-y-[-37px]"}`}>
                     <a href="/" className="text-yellow-800 hover:text-yellow-600">Trang chủ</a>
                     <a href="introduce" className="text-yellow-800 hover:text-yellow-600">Giới thiệu</a>
                     <a href="rooms" className="text-yellow-800 hover:text-yellow-600">Phòng</a>
-                    <a href="" className="text-yellow-800 hover:text-yellow-600">Dịch vụ</a>
-                    <a href="#" className="text-yellow-800 hover:text-yellow-600">Liên hệ</a>
-                    <a onClick={handleAvatarClick} className="mt-[-4px]"><Avatar /></a>
+                    <a href="contact" className="text-yellow-800 hover:text-yellow-600">Liên hệ</a>
+                    {token ? (
+                        <a onClick={handleAvatarClick} className="mt-[-4px]"><Avatar /></a>
+                    ) : (
+                        <div className="flex space-x-2">
+                            <button
+                                onClick={() => navigate('/login')}
+                                className="bg-yellow-800 text-white text-sm px-3 py-1 rounded hover:bg-yellow-700 transition-colors duration-200"
+                            >
+                                Đăng nhập
+                            </button>
+                            <button
+                                onClick={() => navigate('/register')}
+                                className="bg-yellow-800 text-white text-sm px-3 py-1 rounded hover:bg-yellow-700 transition-colors duration-200"
+                            >
+                                Đăng ký
+                            </button>
+                        </div>
+                    )}
                 </nav>
             </div>
         </header>

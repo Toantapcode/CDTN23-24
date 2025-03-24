@@ -29,6 +29,7 @@ const RoomCard = ({ room, onBook }) => {
         </div>
     );
 };
+const token = localStorage.getItem('Token: ')
 
 const RoomsPage = () => {
     const [rooms, setRooms] = useState([]);
@@ -40,11 +41,12 @@ const RoomsPage = () => {
             setLoading(true);
             try {
                 const response = await axiosInstance.get('/room/all');
+                console.log(response.roomList)
                 if (response && response.roomList) {
                     const data = response.roomList;
-                    const familyRooms = data.filter(room => room.type === "FAMILY").sort(() => 0.5 - Math.random()).slice(0, Math.min(2, data.filter(room => room.type === "FAMILY").length));
-                    const coupleRooms = data.filter(room => room.type === "COUPLE").sort(() => 0.5 - Math.random()).slice(0, Math.min(2, data.filter(room => room.type === "COUPLE").length));
-                    const vipRooms = data.filter(room => room.type === "VIP").sort(() => 0.5 - Math.random()).slice(0, Math.min(2, data.filter(room => room.type === "VIP").length));
+                    const familyRooms = data.filter(room => room.type.name === "FAMILY").sort(() => 0.5 - Math.random()).slice(0, Math.min(2, data.filter(room => room.type.name === "FAMILY").length));
+                    const coupleRooms = data.filter(room => room.type.name === "COUPLE").sort(() => 0.5 - Math.random()).slice(0, Math.min(2, data.filter(room => room.type.name === "COUPLE").length));
+                    const vipRooms = data.filter(room => room.type.name === "VIP").sort(() => 0.5 - Math.random()).slice(0, Math.min(2, data.filter(room => room.type.name === "VIP").length));
                     const selectedRooms = [...familyRooms, ...coupleRooms, ...vipRooms].filter(room => room);
                     setRooms(selectedRooms);
                 }
@@ -103,14 +105,18 @@ const RoomsPage = () => {
     }, []);
 
     const handleBook = (room) => {
-        const query = new URLSearchParams({
-            name: room.name,
-            description: room.description,
-            image: room.image,
-            price: room.price.toString(),
-            type: room.type
-        }).toString();
-        navigate(`/bookingpage?${query}`);
+        if (token) {
+            const query = new URLSearchParams({
+                name: room.name,
+                description: room.description,
+                image: room.image,
+                price: room.price.toString(),
+                type: room.type.name
+            }).toString();
+            navigate(`/bookingpage?${query}`);
+        } else {
+            navigate('/login');
+        }
     };
 
     return (

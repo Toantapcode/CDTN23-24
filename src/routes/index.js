@@ -7,6 +7,7 @@ import Admin from "../Admin"
 import UserProfile from "../pages/UserProfile";
 import Dashboard from "../Admin/pages/Dashboard";
 import BookingPage from "../pages/BookingPage";
+import ContactPage from "../pages/component/contact";
 
 
 const publicRoutes = [
@@ -19,6 +20,7 @@ const publicRoutes = [
     { path: "/admin", component: Admin },
     { path: "/dashboard", component: Dashboard },
     { path: "/bookingpage", component: BookingPage },
+    { path: "/contact", component: ContactPage },
 
 ];
 

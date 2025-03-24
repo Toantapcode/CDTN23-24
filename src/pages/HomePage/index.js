@@ -6,16 +6,21 @@ import heroImage3 from '../../assets/image/hero3.webp';
 import Header from '../component/header';
 import Rooms from '../component/rooms';
 import About from '../component/about';
-import Service from '../component/service';
+import ContactPage from '../component/contact.js';
 import Footer from '../component/footer';
 
 const HomePage = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const navigate = useNavigate();
+  const token = localStorage.getItem('Token: ');
 
   const handleClick = () => {
-    navigate('/rooms')
-  }
+    if (token) {
+      navigate('/rooms');
+    } else {
+      navigate('/login');
+    }
+  };
 
   const heroImages = [
     heroImage1,
@@ -28,7 +33,7 @@ const HomePage = () => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
     }, 3000);
     return () => clearInterval(interval);
-  })
+  },[])
   return (
     <div className="bg-gray-100 min-h-screen">
       <Header />
@@ -47,7 +52,7 @@ const HomePage = () => {
       </section>
       <About />
       <Rooms />
-      <Service />
+      <ContactPage />
 
       {/* Testimonials Section */}
       <section className="bg-gray-50 py-12">
@@ -58,13 +63,13 @@ const HomePage = () => {
               <p className="text-gray-600 mb-4">
                 "LuxeStay là khách sạn tuyệt vời nhất mà tôi từng ở. Dịch vụ hoàn hảo và tầm nhìn tuyệt đẹp!"
               </p>
-              <p className="text-gray-800 font-semibold">- Nguyễn Văn A</p>
+              <p className="text-gray-800 font-semibold">- Nguyễn Thành Đạt</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-lg">
               <p className="text-gray-600 mb-4">
                 "Các phòng rộng rãi và sang trọng. Tôi không thể chờ đợi để quay lại!"
               </p>
-              <p className="text-gray-800 font-semibold">- Trần Thị B</p>
+              <p className="text-gray-800 font-semibold">- Trần Phương Thanh</p>
             </div>
           </div>
         </div>

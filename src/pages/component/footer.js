@@ -12,7 +12,6 @@ export default function Footer() {
     return (
         <footer className="bg-white py-10 px-10">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Hình ảnh */}
                 <div>
                     <h3 className="font-bold text-lg mb-4 font">HÌNH ẢNH</h3>
                     <div className="grid grid-cols-3 gap-0">
@@ -25,7 +24,6 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Đăng ký */}
                 <div>
                     <h3 className="font-bold text-lg mb-4">ĐĂNG KÝ</h3>
                     <p className="mb-3">Đăng ký để nhận được thông tin mới nhất từ chúng tôi.</p>
@@ -41,9 +39,6 @@ export default function Footer() {
                         <a href="https://twitter.com" target="_blank" rel="">
                             <FaTwitter className="text-blue-400 text-2xl" />
                         </a>
-                        <a href="https://rss.com" target="_blank" rel="">
-                            <FaRss className="text-orange-500 text-2xl" />
-                        </a>
                         <a href="https://linkedin.com" target="_blank" rel="">
                             <FaLinkedin className="text-blue-700 text-2xl" />
                         </a>
@@ -57,13 +52,12 @@ export default function Footer() {
                     <h3 className="font-bold text-lg mb-4">THÔNG TIN LIÊN HỆ</h3>
                     <p>📍 Nghiêm Xuân Yêm - Đại Kim - Hoàng Mai - Hà Nội</p>
                     <p>📞 012 3456 7890</p>
-                    <p>✉ binvacoc@gmail.com</p>
+                    <p>✉ luxstayfivestars@gmail.com</p>
                     <p>🌐 cdtn</p>
                     <div className="mt-4">
-                        <a href="" className="text-yellow-600">Trang chủ</a> |
+                        <a href="" >Trang chủ</a> |
                         <a href="introduce" className="ml-2">Giới thiệu</a> |
                         <a href="rooms" className="ml-2">Phòng</a> |
-                        {/* <a href="#" className="ml-2">Tin tức</a> |  */}
                         <a href="#" className="ml-2">Liên hệ</a>
                     </div>
                 </div>
