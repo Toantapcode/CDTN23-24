@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Modal, message } from 'antd';
+import { toast, ToastContainer } from 'react-toastify';
 import axiosInstance from '../../../request';
 
 const ProfileContent = () => {
@@ -36,7 +37,7 @@ const ProfileContent = () => {
             await form.validateFields();
             const values = form.getFieldsValue();
             await axiosInstance.put(`/user/updateInfo/${userID}`, values);
-            message.success('Cập nhật thành công!');
+            toast.success('Cập nhật thành công!');
 
             const updatedUser = { ...userData, ...values };
             localStorage.setItem('User: ', JSON.stringify(updatedUser));
@@ -50,6 +51,17 @@ const ProfileContent = () => {
 
     return (
         <div className="p-6">
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
             <h2 className="text-3xl font-bold mb-4">Hồ sơ của tôi</h2>
             <Form layout="vertical">
                 <Form.Item className="font-bold" label="Họ và tên">
@@ -81,13 +93,6 @@ const ProfileContent = () => {
                         label="Họ và tên"
                         name="name"
                         rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
-                    >
-                        <Input className="max-w-[300px]" />
-                    </Form.Item>
-                    <Form.Item
-                        label="Email"
-                        name="email"
-                        rules={[{ required: true, message: 'Vui lòng nhập email!' }]}
                     >
                         <Input className="max-w-[300px]" />
                     </Form.Item>

@@ -33,7 +33,7 @@ const Sidebar = ({ onMenuClick }) => {
 
 
     return (
-        <div className="bg-white h-screen shadow-md p-4 fixed left-0 top-16 w-64">
+        <div className="bg-white h-[70vh] shadow-md p-4 fixed left-0 top-16 w-64 mt-[10vh] ml-[10vw]">
             <Menu
                 mode="inline"
                 selectedKeys={[selectedKey]}
