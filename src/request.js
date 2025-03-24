@@ -23,7 +23,6 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   function (response) {
-    console.log({ response })
     return response.data
   },
   function (error) {
@@ -32,13 +31,5 @@ axiosInstance.interceptors.response.use(
   },
 )
 
-// const ProtectedRoute = ({children}) => {
-//   const token = localStorage.getItem('token');
-
-//   if (!token) {
-//     return <Navigate to path='/login' replace />
-//   }
-//   return children;
-// }
 
 export default axiosInstance;

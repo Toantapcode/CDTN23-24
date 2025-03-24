@@ -101,10 +101,12 @@ const RoomsPage = () => {
             }
         };
 
+        localStorage.removeItem('SelectedRoomId');
         fetchRooms();
     }, []);
 
     const handleBook = (room) => {
+        localStorage.setItem('SelectedRoomId', room.id);
         if (token) {
             const query = new URLSearchParams({
                 name: room.name,

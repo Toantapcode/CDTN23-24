@@ -3,6 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import Header from "../component/header";
 import Footer from "../component/footer";
 import imgbg from "../../assets/image/hero3.webp";
+import axiosInstance from "../../request";
+import { ToastContainer, toast } from 'react-toastify';
 
 const BookingPage = () => {
     const [searchParams] = useSearchParams();
@@ -24,12 +26,17 @@ const BookingPage = () => {
 
     const today = new Date().toISOString().split("T")[0];
 
+    const selectedRoomId = localStorage.getItem('SelectedRoomId');
+    const storedUser = localStorage.getItem('User: ');
+    const userData = storedUser ? JSON.parse(storedUser) : null;
+    const userId = userData?.id || null;
+
     const calculateDays = () => {
         if (checkInDate && checkOutDate) {
             const checkIn = new Date(checkInDate);
             const checkOut = new Date(checkOutDate);
             const diffTime = checkOut - checkIn;
-            return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         }
         return 0;
     };
@@ -44,7 +51,7 @@ const BookingPage = () => {
             ? `${(room.price * 1000).toLocaleString('vi-VN')} VND / đêm`
             : "";
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const checkIn = new Date(checkInDate);
@@ -52,36 +59,47 @@ const BookingPage = () => {
         const now = new Date(today);
 
         if (checkIn < now) {
-            setError("Ngày nhận phòng phải là hôm nay hoặc trong tương lai.");
+            toast.error("Ngày nhận phòng phải là hôm nay hoặc trong tương lai.");
             return;
         }
 
         if (checkOut <= checkIn) {
-            setError("Ngày trả phòng phải sau ngày nhận phòng.");
+            toast.error("Ngày trả phòng phải sau ngày nhận phòng.");
             return;
         }
 
         if (checkOut <= now) {
-            setError("Ngày trả phòng phải là một ngày trong tương lai.");
+            toast.error("Ngày trả phòng phải là một ngày trong tương lai.");
             return;
         }
 
         if (!paymentMethod) {
-            setError("Vui lòng chọn phương thức thanh toán.");
+            toast.error("Vui lòng chọn phương thức thanh toán.");
             return;
         }
 
-        setError(""); 
-        const bookingDetails = {
-            room: room.name,
+        setError("");
+        const bookingData = {
             checkInDate,
             checkOutDate,
             numOfAdults,
             numOfChild,
-            paymentMethod,
-            totalPrice,
         };
-        console.log("Thông tin đặt phòng:", bookingDetails);
+        try {
+            const response = await axiosInstance.post(
+                `/booking/bookRoom/${selectedRoomId}/${userId}`,
+                bookingData
+            );
+            toast.success('Đặt phòng thành công!', {
+                position: 'top-right',
+                autoClose: 3000
+            })
+
+            localStorage.removeItem('SelectedRoomId');
+        } catch (error) {
+            console.error("Lỗi khi đặt phòng:", error);
+            setError("Đặt phòng thất bại. Vui lòng thử lại.");
+        }
     };
 
     return (
@@ -128,7 +146,7 @@ const BookingPage = () => {
                                         id="checkInDate"
                                         value={checkInDate}
                                         onChange={(e) => setCheckInDate(e.target.value)}
-                                        min={today} 
+                                        min={today}
                                         dateFormat="yyyy/MM/dd"
                                         className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
                                         required
@@ -143,7 +161,7 @@ const BookingPage = () => {
                                         id="checkOutDate"
                                         value={checkOutDate}
                                         onChange={(e) => setCheckOutDate(e.target.value)}
-                                        min={checkInDate || today} 
+                                        min={checkInDate || today}
                                         dateFormat="yyyy/MM/dd"
                                         className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
                                         required
@@ -206,6 +224,7 @@ const BookingPage = () => {
                     </div>
                 </div>
             </div>
+            <ToastContainer />
             <Footer />
         </div>
     );
