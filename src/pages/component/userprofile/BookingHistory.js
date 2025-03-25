@@ -14,7 +14,6 @@ const BookingHistory = () => {
             const fetchBookings = async () => {
                 try {
                     const response = await axiosInstance.get(`/user/getUserBooking/${userId}`);
-                    console.log('Dữ liệu từ API:', response.user.bookings);
 
                     setBookings(response.user.bookings);
                 } catch (error) {
