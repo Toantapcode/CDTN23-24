@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Header from "../component/header";
 import Footer from "../component/footer";
@@ -23,13 +23,29 @@ const BookingPage = () => {
     const [numOfChild, setNumOfChild] = useState(0);
     const [paymentMethod, setPaymentMethod] = useState("");
     const [error, setError] = useState("");
+    const [services, setServices] = useState([]);
+    const [selectedServices, setSelectedServices] = useState([]);
 
     const today = new Date().toISOString().split("T")[0];
-
     const selectedRoomId = localStorage.getItem('SelectedRoomId');
     const storedUser = localStorage.getItem('User: ');
     const userData = storedUser ? JSON.parse(storedUser) : null;
     const userId = userData?.id || null;
+
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const response = await axiosInstance.get('/service/all');
+                console.log('dichvu: ', response);
+                setServices(response.serviceList || []);
+            } catch (error) {
+                console.error("Error fetching services:", error);
+                toast.error("Không thể tải danh sách dịch vụ.");
+                setServices([]);
+            }
+        };
+        fetchServices();
+    }, []);
 
     const calculateDays = () => {
         if (checkInDate && checkOutDate) {
@@ -41,15 +57,37 @@ const BookingPage = () => {
         return 0;
     };
 
+    const calculateServiceTotal = () => {
+        return selectedServices.reduce((total, serviceId) => {
+            const service = services.find(s => s.id === serviceId);
+            return total + (service?.price || 0);
+        }, 0);
+    };
+
     const totalPrice = room.price && calculateDays() > 0
-        ? room.price * 1000 * calculateDays()
-        : 0;
+        ? (room.price * 1000 * calculateDays()) + calculateServiceTotal() * 1000 
+        : calculateServiceTotal() * 1000;
 
     const displayPrice = totalPrice > 0
-        ? `${totalPrice.toLocaleString('vi-VN')} VND (${calculateDays()} đêm)`
+        ? `${totalPrice.toLocaleString('vi-VN')} VND (${calculateDays()} đêm${selectedServices.length > 0 ? ' + dịch vụ' : ''})`
         : room.price !== null && room.price !== undefined
             ? `${(room.price * 1000).toLocaleString('vi-VN')} VND / đêm`
             : "";
+
+    const handleServiceChange = (serviceId) => {
+        setSelectedServices(prev => {
+            if (prev.includes(serviceId)) {
+                return prev.filter(id => id !== serviceId);
+            } else {
+                return [...prev, serviceId];
+            }
+        });
+        // Cập nhật localStorage
+        const updatedServices = selectedServices.includes(serviceId)
+            ? selectedServices.filter(id => id !== serviceId)
+            : [...selectedServices, serviceId];
+        localStorage.setItem('SelectedServices', JSON.stringify(updatedServices));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -84,6 +122,7 @@ const BookingPage = () => {
             checkOutDate,
             numOfAdults,
             numOfChild,
+            serviceIds: selectedServices
         };
         try {
             const response = await axiosInstance.post(
@@ -93,11 +132,16 @@ const BookingPage = () => {
             toast.success('Đặt phòng thành công!', {
                 position: 'top-right',
                 autoClose: 3000
-            })
+            });
 
             localStorage.removeItem('SelectedRoomId');
+            localStorage.removeItem('SelectedServices');
         } catch (error) {
             console.error("Lỗi khi đặt phòng:", error);
+            toast.error(error.em, {
+                position: 'top-right',
+                autoClose: 3000
+            })
             setError("Đặt phòng thất bại. Vui lòng thử lại.");
         }
     };
@@ -194,6 +238,30 @@ const BookingPage = () => {
                                         className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
                                         required
                                     />
+                                </div>
+                                <div className="mb-4">
+                                    <label className="block text-gray-700 font-bold mb-2">
+                                        Dịch vụ bổ sung
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto border rounded-lg p-2">
+                                        {services && services.length > 0 ? (
+                                            services.map((service) => (
+                                                <button
+                                                    key={service.id}
+                                                    type="button"
+                                                    onClick={() => handleServiceChange(service.id)}
+                                                    className={`p-2 rounded-lg text-sm transition-colors ${selectedServices.includes(service.id)
+                                                            ? 'bg-yellow-600 text-white'
+                                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                                        }`}
+                                                >
+                                                    {service.name}  {service.price.toLocaleString('vi-VN') * 1000} VND
+                                                </button>
+                                            ))
+                                        ) : (
+                                            <p className="text-gray-500 col-span-2">Không có dịch vụ nào</p>
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="mb-4">
                                     <label className="block text-gray-700 font-bold mb-2" htmlFor="paymentMethod">
