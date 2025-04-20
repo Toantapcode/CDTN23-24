@@ -1,4 +1,3 @@
-// App.js
 import React, { useEffect, useState } from 'react';
 import { publicRoutes, privateRoutes } from "./routes";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
@@ -12,8 +11,13 @@ function App() {
   const [user, setUser] = useState(null);
 
   const getCurrentUser = () => {
-    const user = localStorage.getItem('User: ');
-    return user ? JSON.parse(user) : null;
+    try {
+      const user = localStorage.getItem('User: ');
+      return user ? JSON.parse(user) : null;
+    } catch (e) {
+      console.error("Lỗi khi parse dữ liệu user:", e);
+      return null;
+    }
   };
 
   useEffect(() => {
@@ -46,7 +50,7 @@ function App() {
           <Route
             path="/"
             element={
-              getCurrentUser() && getCurrentUser().roles.includes("ADMIN") ? (
+              user && user.roles && user.roles.includes("ADMIN") ? (
                 <Navigate to="/admin" replace />
               ) : (
                 <div className="wow animate__animated animate__fadeIn">

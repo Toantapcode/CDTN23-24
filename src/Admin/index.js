@@ -7,6 +7,7 @@ import RoomTypePage from './pages/RoomTypePage';
 import UserManagement from './pages/UserManagement';
 import BookingPage from './pages/Booking';
 import ServicePage from './pages/Service';
+import RolePage from './pages/RolePage'
 
 export default function Admin() {
     const [content, setContent] = useState('dashboard');
@@ -19,14 +20,14 @@ export default function Admin() {
                 return <BookingPage />;
             case 'usermanagement':
                 return <UserManagement />;
+            case 'role':
+                return <RolePage />;
             case 'rooms':
                 return <Rooms />;
             case 'roomtypes':
                 return <RoomTypePage />;
             case 'service':
                 return <ServicePage />;
-            // case 'rate':
-            //     return <Rate />;
             default:
                 return <Dashboard />;
         }

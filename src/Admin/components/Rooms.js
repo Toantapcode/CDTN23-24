@@ -38,12 +38,13 @@ const Rooms = () => {
             <h2 className="text-2xl font-bold text-gray-700 mb-4">Rooms</h2>
             <div className="flex gap-4">
                 {roomTypes.map((type) => {
-                    const roomsOfType = rooms.filter(room => room.type === type);
+                    const roomsOfType = rooms.filter(room => room.type.name === type);
                     const totalRooms = roomsOfType.length;
-
+                    console.log('bookings: ', bookings)
                     const bookedRooms = bookings.filter(booking =>
-                        roomsOfType.some(room => room.id === booking.roomId)
+                        roomsOfType.some(room => room.id === booking.id)
                     ).length;
+                    console.log('bookedRooms: ', bookedRooms)
 
                     const pricePerDay = roomsOfType[0]?.pricePerDay || 0;
 

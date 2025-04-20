@@ -29,7 +29,8 @@ const RoomCard = ({ room, onBook }) => {
         </div>
     );
 };
-const token = localStorage.getItem('Token: ')
+
+const token = localStorage.getItem('Token: ');
 
 const RoomsPage = () => {
     const [rooms, setRooms] = useState([]);
@@ -41,12 +42,21 @@ const RoomsPage = () => {
             setLoading(true);
             try {
                 const response = await axiosInstance.get('/room/all');
-                console.log(response.roomList)
+                console.log(response.roomList);
                 if (response && response.roomList) {
                     const data = response.roomList;
-                    const familyRooms = data.filter(room => room.type.name === "FAMILY").sort(() => 0.5 - Math.random()).slice(0, Math.min(2, data.filter(room => room.type.name === "FAMILY").length));
-                    const coupleRooms = data.filter(room => room.type.name === "COUPLE").sort(() => 0.5 - Math.random()).slice(0, Math.min(2, data.filter(room => room.type.name === "COUPLE").length));
-                    const vipRooms = data.filter(room => room.type.name === "VIP").sort(() => 0.5 - Math.random()).slice(0, Math.min(2, data.filter(room => room.type.name === "VIP").length));
+                    const familyRooms = data
+                        .filter(room => room.type.name === "FAMILY")
+                        .sort(() => 0.5 - Math.random())
+                        .slice(0, Math.min(2, data.filter(room => room.type.name === "FAMILY").length));
+                    const coupleRooms = data
+                        .filter(room => room.type.name === "COUPLE")
+                        .sort(() => 0.5 - Math.random())
+                        .slice(0, Math.min(2, data.filter(room => room.type.name === "COUPLE").length));
+                    const vipRooms = data
+                        .filter(room => room.type.name === "VIP")
+                        .sort(() => 0.5 - Math.random())
+                        .slice(0, Math.min(2, data.filter(room => room.type.name === "VIP").length));
                     const selectedRooms = [...familyRooms, ...coupleRooms, ...vipRooms].filter(room => room);
                     setRooms(selectedRooms);
                 }
@@ -102,20 +112,15 @@ const RoomsPage = () => {
         };
 
         localStorage.removeItem('SelectedRoomId');
+        localStorage.removeItem('SelectedRoom'); 
         fetchRooms();
     }, []);
 
     const handleBook = (room) => {
         localStorage.setItem('SelectedRoomId', room.id);
+        localStorage.setItem('SelectedRoom', JSON.stringify(room));
         if (token) {
-            const query = new URLSearchParams({
-                name: room.name,
-                description: room.description,
-                image: room.image,
-                price: room.price.toString(),
-                type: room.type.name
-            }).toString();
-            navigate(`/bookingpage?${query}`);
+            navigate('/bookingpage', { state: { room } });
         } else {
             navigate('/login');
         }

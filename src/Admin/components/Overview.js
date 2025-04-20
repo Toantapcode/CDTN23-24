@@ -37,9 +37,21 @@ const Overview = () => {
 
     const checkInToday = bookings.filter((b) => b.checkInDate === today).length;
     const checkOutToday = bookings.filter((b) => b.checkOutDate === today).length;
-    const totalInHotel = bookings.reduce((total, booking) => total + booking.totalNumOfGuest, 0);
+    const totalInHotel = bookings
+        .filter((b) => {
+            const checkIn = new Date(b.checkInDate);
+            const checkOut = new Date(b.checkOutDate);
+            const todayDate = new Date(today);
+            return checkIn <= todayDate && todayDate <= checkOut;
+        })
+        .reduce((total, booking) => total + booking.totalNumOfGuest, 0);
     const totalRooms = numOfRoom;
-    const occupiedRooms = bookings.length;
+    const occupiedRooms = bookings.filter((b) => {
+        const checkIn = new Date(b.checkInDate);
+        const checkOut = new Date(b.checkOutDate);
+        const todayDate = new Date(today);
+        return checkIn <= todayDate && todayDate <= checkOut;
+    }).length;
     const availableRooms = totalRooms - occupiedRooms;
 
     return (

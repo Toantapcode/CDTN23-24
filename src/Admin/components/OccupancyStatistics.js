@@ -13,7 +13,6 @@ const OccupancyStatistics = () => {
                 const response = await axiosInstance.get("/booking/all");
                 const bookings = response.bookingList || [];
                 
-                // Lọc dữ liệu theo năm
                 const yearlyData = Array(12).fill(0).map((_, index) => {
                     const month = index + 1;
                     const occupancy = bookings.filter(b => 
@@ -44,10 +43,10 @@ const OccupancyStatistics = () => {
                     })}
                 </Select>
             </div>
-            <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={data}>
-                    <XAxis dataKey="name" />
-                    <YAxis allowDecimals={false} />
+            <ResponsiveContainer width="100%" height={450}>
+                <BarChart data={data} barCategoryGap="75%">
+                    <XAxis dataKey="name" interval={0} tick={{ textAnchor: "end", fontSize: 10 }}/>
+                    <YAxis allowDecimals={false} tickCount={11} />
                     <Tooltip formatter={(value) => [`${value}`, "Số lượng đặt phòng"]} />
                     <Bar dataKey="occupancy" fill="#3498db" />
                 </BarChart>

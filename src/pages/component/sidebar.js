@@ -40,7 +40,6 @@ const Sidebar = ({ onMenuClick }) => {
                 onClick={handleClick}
                 className="border-none"
             >
-                {/* Phần 1 */}
                 <Menu.ItemGroup title="Cá nhân" className="font-bold">
                     <Menu.Item key="profile" icon={<UserOutlined />}>
                         Hồ sơ của tôi
@@ -53,7 +52,6 @@ const Sidebar = ({ onMenuClick }) => {
                     </Menu.Item>
                 </Menu.ItemGroup>
 
-                {/* Phần 2 */}
                 <Menu.ItemGroup title="Khác" className="font-bold mt-4">
                     <Menu.Item key="support" icon={<QuestionCircleOutlined />}>
                         Hỗ trợ

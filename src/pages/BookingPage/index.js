@@ -1,30 +1,36 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import Header from "../component/header";
 import Footer from "../component/footer";
 import imgbg from "../../assets/image/hero3.webp";
 import axiosInstance from "../../request";
 import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const BookingPage = () => {
+    const { state } = useLocation();
     const [searchParams] = useSearchParams();
+    const [room, setRoom] = useState(() => {
+        return state?.room || JSON.parse(localStorage.getItem('SelectedRoom')) || {
+            name: "Không xác định",
+            description: "",
+            image: "path/to/default_image.jpg",
+            price: null,
+            type: "",
+        };
+    });
 
-    const room = {
-        name: searchParams.get("name") || "Không xác định",
-        description: searchParams.get("description") || "",
-        image: searchParams.get("image") || "path/to/default_image.jpg",
-        price: searchParams.get("price") ? parseInt(searchParams.get("price")) : null,
-        type: searchParams.get("type") || "",
-    };
-
-    const [checkInDate, setCheckInDate] = useState("");
-    const [checkOutDate, setCheckOutDate] = useState("");
-    const [numOfAdults, setNumOfAdults] = useState(1);
-    const [numOfChild, setNumOfChild] = useState(0);
-    const [paymentMethod, setPaymentMethod] = useState("");
+    const savedFormData = JSON.parse(localStorage.getItem('BookingFormData')) || {};
+    const [checkInDate, setCheckInDate] = useState(savedFormData.checkInDate || "");
+    const [checkOutDate, setCheckOutDate] = useState(savedFormData.checkOutDate || "");
+    const [numOfAdults, setNumOfAdults] = useState(savedFormData.numOfAdults || 1);
+    const [numOfChild, setNumOfChild] = useState(savedFormData.numOfChild || 0);
+    const [paymentMethod, setPaymentMethod] = useState(savedFormData.paymentMethod || "");
     const [error, setError] = useState("");
     const [services, setServices] = useState([]);
-    const [selectedServices, setSelectedServices] = useState([]);
+    const [selectedServices, setSelectedServices] = useState(savedFormData.selectedServices || []);
+    const [paymentCompleted, setPaymentCompleted] = useState(false);
+    const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
 
     const today = new Date().toISOString().split("T")[0];
     const selectedRoomId = localStorage.getItem('SelectedRoomId');
@@ -32,20 +38,46 @@ const BookingPage = () => {
     const userData = storedUser ? JSON.parse(storedUser) : null;
     const userId = userData?.id || null;
 
+    // Kiểm tra trạng thái thanh toán khi tải trang
+    useEffect(() => {
+        if (searchParams.get('status') === '00') {
+            setIsPaymentSuccessful(true);
+            setPaymentCompleted(true);
+            setPaymentMethod("vnpay");
+            toast.success("Thanh toán VN PAY thành công!", {
+                position: 'top-right',
+                autoClose: 3000,
+            });
+        }
+    }, [searchParams]);
+
+    // Lấy danh sách dịch vụ
     useEffect(() => {
         const fetchServices = async () => {
             try {
                 const response = await axiosInstance.get('/service/all');
-                console.log('dichvu: ', response);
                 setServices(response.serviceList || []);
             } catch (error) {
-                console.error("Error fetching services:", error);
+                console.error("Lỗi khi lấy danh sách dịch vụ:", error);
                 toast.error("Không thể tải danh sách dịch vụ.");
                 setServices([]);
             }
         };
         fetchServices();
     }, []);
+
+    // Lưu dữ liệu biểu mẫu vào localStorage khi thay đổi
+    useEffect(() => {
+        const formData = {
+            checkInDate,
+            checkOutDate,
+            numOfAdults,
+            numOfChild,
+            paymentMethod,
+            selectedServices,
+        };
+        localStorage.setItem('BookingFormData', JSON.stringify(formData));
+    }, [checkInDate, checkOutDate, numOfAdults, numOfChild, paymentMethod, selectedServices]);
 
     const calculateDays = () => {
         if (checkInDate && checkOutDate) {
@@ -65,14 +97,14 @@ const BookingPage = () => {
     };
 
     const totalPrice = room.price && calculateDays() > 0
-        ? (room.price * 1000 * calculateDays()) + calculateServiceTotal() * 1000 
+        ? (room.price * 1000 * calculateDays()) + calculateServiceTotal() * 1000
         : calculateServiceTotal() * 1000;
 
-    const displayPrice = totalPrice > 0
+    const displayPrice = totalPrice > 0 && !isNaN(totalPrice)
         ? `${totalPrice.toLocaleString('vi-VN')} VND (${calculateDays()} đêm${selectedServices.length > 0 ? ' + dịch vụ' : ''})`
         : room.price !== null && room.price !== undefined
             ? `${(room.price * 1000).toLocaleString('vi-VN')} VND / đêm`
-            : "";
+            : "Giá không xác định";
 
     const handleServiceChange = (serviceId) => {
         setSelectedServices(prev => {
@@ -82,37 +114,77 @@ const BookingPage = () => {
                 return [...prev, serviceId];
             }
         });
-        // Cập nhật localStorage
-        const updatedServices = selectedServices.includes(serviceId)
-            ? selectedServices.filter(id => id !== serviceId)
-            : [...selectedServices, serviceId];
-        localStorage.setItem('SelectedServices', JSON.stringify(updatedServices));
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
+    // Hàm kiểm tra hợp lệ các trường
+    const validateForm = () => {
         const checkIn = new Date(checkInDate);
         const checkOut = new Date(checkOutDate);
         const now = new Date(today);
 
         if (checkIn < now) {
             toast.error("Ngày nhận phòng phải là hôm nay hoặc trong tương lai.");
-            return;
+            return false;
         }
 
         if (checkOut <= checkIn) {
             toast.error("Ngày trả phòng phải sau ngày nhận phòng.");
-            return;
+            return false;
         }
 
         if (checkOut <= now) {
             toast.error("Ngày trả phòng phải là một ngày trong tương lai.");
-            return;
+            return false;
         }
 
         if (!paymentMethod) {
             toast.error("Vui lòng chọn phương thức thanh toán.");
+            return false;
+        }
+
+        return true;
+    };
+
+    const handlePayment = async () => {
+        // Kiểm tra hợp lệ trước khi gọi API
+        if (!validateForm()) {
+            return;
+        }
+
+        if (paymentMethod !== "vnpay") {
+            toast.error("Phương thức thanh toán phải là VN PAY.");
+            return;
+        }
+
+        try {
+            const vnpayResponse = await axiosInstance.get(
+                `/payment/vn-pay?amount=${totalPrice}&bankCode=NCB`
+            );
+            if (vnpayResponse.data?.paymentUrl) {
+                window.location.href = vnpayResponse.data.paymentUrl;
+            } else {
+                throw new Error("Không nhận được URL thanh toán từ VN PAY");
+            }
+        } catch (error) {
+            console.error("Lỗi khi khởi tạo thanh toán VN PAY:", error);
+            toast.error(error.em || "Khởi tạo thanh toán VN PAY thất bại. Vui lòng thử lại.", {
+                position: 'top-right',
+                autoClose: 3000,
+            });
+            setError("Khởi tạo thanh toán VN PAY thất bại. Vui lòng thử lại.");
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Kiểm tra hợp lệ trước khi gửi POST
+        if (!validateForm()) {
+            return;
+        }
+
+        if (paymentMethod === "vnpay" && !paymentCompleted) {
+            toast.error("Vui lòng hoàn tất thanh toán VN PAY trước khi xác nhận đặt phòng.");
             return;
         }
 
@@ -122,8 +194,9 @@ const BookingPage = () => {
             checkOutDate,
             numOfAdults,
             numOfChild,
-            serviceIds: selectedServices
+            serviceIds: selectedServices,
         };
+
         try {
             const response = await axiosInstance.post(
                 `/booking/bookRoom/${selectedRoomId}/${userId}`,
@@ -131,17 +204,19 @@ const BookingPage = () => {
             );
             toast.success('Đặt phòng thành công!', {
                 position: 'top-right',
-                autoClose: 3000
+                autoClose: 3000,
             });
 
             localStorage.removeItem('SelectedRoomId');
+            localStorage.removeItem('SelectedRoom');
             localStorage.removeItem('SelectedServices');
+            localStorage.removeItem('BookingFormData');
         } catch (error) {
             console.error("Lỗi khi đặt phòng:", error);
-            toast.error(error.em, {
+            toast.error(error.em || "Đặt phòng thất bại. Vui lòng thử lại.", {
                 position: 'top-right',
-                autoClose: 3000
-            })
+                autoClose: 3000,
+            });
             setError("Đặt phòng thất bại. Vui lòng thử lại.");
         }
     };
@@ -251,11 +326,11 @@ const BookingPage = () => {
                                                     type="button"
                                                     onClick={() => handleServiceChange(service.id)}
                                                     className={`p-2 rounded-lg text-sm transition-colors ${selectedServices.includes(service.id)
-                                                            ? 'bg-yellow-600 text-white'
-                                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                                        ? 'bg-yellow-600 text-white'
+                                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                                         }`}
                                                 >
-                                                    {service.name}  {service.price.toLocaleString('vi-VN') * 1000} VND
+                                                    {service.name} {(service.price * 1000).toLocaleString('vi-VN')} VND
                                                 </button>
                                             ))
                                         ) : (
@@ -263,27 +338,40 @@ const BookingPage = () => {
                                         )}
                                     </div>
                                 </div>
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="paymentMethod">
-                                        Phương thức thanh toán
-                                    </label>
-                                    <select
-                                        id="paymentMethod"
-                                        value={paymentMethod}
-                                        onChange={(e) => setPaymentMethod(e.target.value)}
-                                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
-                                        required
+                                {!isPaymentSuccessful && (
+                                    <div className="mb-4">
+                                        <label className="block text-gray-700 font-bold mb-2" htmlFor="paymentMethod">
+                                            Phương thức thanh toán
+                                        </label>
+                                        <select
+                                            id="paymentMethod"
+                                            value={paymentMethod}
+                                            onChange={(e) => {
+                                                setPaymentMethod(e.target.value);
+                                                setPaymentCompleted(false);
+                                            }}
+                                            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
+                                            required
+                                        >
+                                            <option value="">Chọn phương thức thanh toán</option>
+                                            <option value="cash">Tiền mặt</option>
+                                            <option value="vnpay">VN PAY</option>
+                                        </select>
+                                    </div>
+                                )}
+                                {!isPaymentSuccessful && paymentMethod === "vnpay" && !paymentCompleted && (
+                                    <button
+                                        type="button"
+                                        onClick={handlePayment}
+                                        className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 uppercase font-bold tracking-widest w-full mb-4"
                                     >
-                                        <option value="">Chọn phương thức thanh toán</option>
-                                        <option value="cash">Tiền mặt</option>
-                                        <option value="credit_card">Thẻ tín dụng</option>
-                                        <option value="bank_transfer">Chuyển khoản ngân hàng</option>
-                                        <option value="momo">Ví MoMo</option>
-                                    </select>
-                                </div>
+                                        Thanh toán
+                                    </button>
+                                )}
                                 <button
                                     type="submit"
                                     className="bg-yellow-600 text-white px-6 py-3 rounded-lg hover:bg-yellow-700 uppercase font-bold tracking-widest w-full"
+                                    disabled={paymentMethod === "vnpay" && !paymentCompleted}
                                 >
                                     Xác nhận đặt phòng
                                 </button>

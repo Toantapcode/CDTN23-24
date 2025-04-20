@@ -101,13 +101,11 @@ const ServicePage = () => {
         setSelectedService(service);
         setIsModalVisible(true);
         if (service) {
-            // Điền thông tin hiện tại vào form khi sửa
             form.setFieldsValue({
                 name: service.name,
                 price: service.price,
             });
         } else {
-            // Reset form khi thêm mới
             form.resetFields();
         }
     };

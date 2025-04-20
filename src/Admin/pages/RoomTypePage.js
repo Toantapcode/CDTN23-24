@@ -12,17 +12,6 @@ const RoomTypePage = () => {
     const [modalTitle, setModalTitle] = useState('');
     const [selectedRoomType, setSelectedRoomType] = useState(null);
 
-    const handleApiCall = async (method, url, data = null, successMsg, errorMsg) => {
-        try {
-            const response = await axiosInstance[method](url, data);
-            return response;
-        } catch (error) {
-            console.error(error);
-            toast.error(errorMsg);
-            throw error;
-        }
-    };
-
     const typeColors = {
         'FAMILY': 'blue',
         'COUPLE': 'green',
@@ -52,9 +41,16 @@ const RoomTypePage = () => {
 
     const fetchRoomTypes = async () => {
         setLoading(true);
-        const data = await handleApiCall('get', '/roomType/all', null, 'Tải danh sách phòng thành công!', 'Lỗi khi tải danh sách!');
-        setRoomTypes(data?.roomTypeList || []);
-        setLoading(false);
+        try {
+            const response = await axiosInstance.get('/roomType/all');
+            setRoomTypes(response.roomTypeList || []);
+        } catch (error) {
+            console.error('Lỗi khi tải danh sách:', error.response || error.message);
+            toast.error('Lỗi khi tải danh sách!');
+            setRoomTypes([]);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const showModal = (title, roomType = null) => {
@@ -67,22 +63,29 @@ const RoomTypePage = () => {
         showModal('Thêm loại phòng');
     };
 
-    const handleEdit = (roomType) => {
-        showModal('Sửa loại phòng', roomType);
-    };
-
     const handleDelete = async (id) => {
-        await handleApiCall('delete', `/roomType/delete/${id}`, null, 'Xóa thành công!', 'Lỗi khi xóa!');
-        fetchRoomTypes();
+        try {
+            await axiosInstance.delete(`/roomType/delete/${id}`);
+            toast.success('Xóa thành công!');
+            fetchRoomTypes();
+        } catch (error) {
+            console.error('Lỗi khi xóa:', error.response?.data || error.message);
+            toast.error('Lỗi khi xóa!');
+        }
     };
 
     const handleOk = async (form) => {
-        const values = await form.validateFields();
-        const url = selectedRoomType ? `/roomType/update/${selectedRoomType.id}` : '/roomType/add';
-        const method = selectedRoomType ? 'put' : 'post';
-        await handleApiCall(method, url, values, selectedRoomType ? 'Cập nhật thành công!' : 'Thêm thành công!', 'Lỗi khi lưu!');
-        setIsModalVisible(false);
-        fetchRoomTypes();
+        try {
+            const values = await form.validateFields();
+            const url = selectedRoomType ? `/roomType/update/${selectedRoomType.id}` : '/roomType/add';
+            const method = selectedRoomType ? 'put' : 'post';
+            await axiosInstance[method](url, values);
+            toast.success(selectedRoomType ? 'Cập nhật thành công!' : 'Thêm thành công!');
+            setIsModalVisible(false);
+            fetchRoomTypes();
+        } catch (error) {
+            toast.error(error.em);
+        }
     };
 
     const handleCancel = () => {
@@ -96,7 +99,7 @@ const RoomTypePage = () => {
             <Button type="primary" icon={<PlusOutlined />} onClick={() => showModal('Thêm loại phòng')} className="mb-4 float-right">
                 Thêm loại phòng
             </Button>
-            <Table dataSource={roomTypes} columns={columns} loading={loading} rowKey="id" pagination={{ pageSize: 10 }} />
+            <Table dataSource={roomTypes} columns={columns} loading={loading} rowKey="id" pagination={{ pageSize: 10, position: ["bottomCenter"] }} />
             <RoomTypeForm
                 visible={isModalVisible}
                 title={modalTitle}

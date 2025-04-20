@@ -29,7 +29,7 @@ const Usermanagement = () => {
             dataIndex: 'roles',
             key: 'roles',
             render: (roles) => {
-                let color = roles === 'ADMIN' ? 'blue' : 'orange';
+                let color = roles == 'ADMIN' ? 'blue' : 'orange';
                 return <Tag color={color}>{roles}</Tag>;
             }
         },

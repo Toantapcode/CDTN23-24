@@ -7,7 +7,9 @@ import {
     HomeOutlined,
     TagsOutlined,
     DollarCircleOutlined,
+    LogoutOutlined
 } from '@ant-design/icons';
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({ onMenuClick }) => {
     const menuItems = [
@@ -31,8 +33,8 @@ const Sidebar = ({ onMenuClick }) => {
                     label: 'Quản lý tài khoản',
                 },
                 {
-                    key: 'rolemanagement',
-                    label: 'Quản lý chức vụ',
+                    key: 'role',
+                    label: 'Quản lý chức danh',
                 },
             ],
         },
@@ -61,13 +63,37 @@ const Sidebar = ({ onMenuClick }) => {
             label: 'Hóa đơn',
             icon: <DollarCircleOutlined />,
         },
+        {
+            key: 'logout',
+            label: 'Đăng xuất',
+            icon: <LogoutOutlined />,
+        },
     ];
+
+    const navigate = useNavigate();
+    const handleLogout = async () => {
+        try {
+            localStorage.removeItem('Token: ');
+            localStorage.removeItem('User: ');
+            navigate('/login');
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    };
+
+    const handleMenuClick = ({ key }) => {
+        if (key === 'logout') {
+            handleLogout();
+        } else {
+            onMenuClick(key);
+        }
+    };
 
     return (
         <Menu
             mode="inline"
             className="w-[12%] min-h-screen rounded-lg shadow-lg mt-5 ml-10 pt-5 space-y-4 font-bold"
-            onClick={({ key }) => onMenuClick(key)}
+            onClick={handleMenuClick}
         >
             {menuItems.map((item) =>
                 item.children ? (

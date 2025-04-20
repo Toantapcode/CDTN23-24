@@ -205,6 +205,7 @@ const RoomsPage = () => {
                 price: Number(values.price),
                 type: { id: values.type },
             };
+            console.log(payload);
 
             if (selectedRoom) {
                 await axiosInstance.put(`/room/update/${selectedRoom.id}`, payload);
@@ -229,7 +230,7 @@ const RoomsPage = () => {
 
     const handleDeleteMany = async () => {
         if (selectedRowKeys.length === 0) {
-            toast.warning("Vui lòng chọn ít nhất một người dùng!");
+            toast.warning("Vui lòng chọn ít nhất một phòng!");
             return;
         }
 
@@ -239,7 +240,7 @@ const RoomsPage = () => {
             setSelectedRowKeys([]);
             fetchRooms();
         } catch (error) {
-            toast.error('Lỗi khi xóa nhiều người dùng!');
+            toast.error('Lỗi khi xóa nhiều phòng!');
         }
     };
 
