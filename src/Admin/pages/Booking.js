@@ -265,7 +265,7 @@ const BookingPage = () => {
                         style={{ width: 250 }}
                     />
                 </div>
-                <Button type="primary" icon={<PlusOutlined />}>Thêm đặt phòng</Button>
+                {/* <Button type="primary" icon={<PlusOutlined />}>Thêm đặt phòng</Button> */}
             </div>
             <Table
                 dataSource={filteredBookings}

@@ -8,6 +8,7 @@ import UserManagement from './pages/UserManagement';
 import BookingPage from './pages/Booking';
 import ServicePage from './pages/Service';
 import RolePage from './pages/RolePage'
+import Invoice from './pages/Invoice';
 
 export default function Admin() {
     const [content, setContent] = useState('dashboard');
@@ -28,6 +29,8 @@ export default function Admin() {
                 return <RoomTypePage />;
             case 'service':
                 return <ServicePage />;
+            case 'invoice':
+                return <Invoice />; 
             default:
                 return <Dashboard />;
         }
