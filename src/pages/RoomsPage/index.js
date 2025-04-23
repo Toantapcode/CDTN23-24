@@ -6,159 +6,205 @@ import imgbg from "../../assets/image/hero3.webp";
 import axiosInstance from "../../request";
 
 const RoomCard = ({ room, onBook }) => {
-    const displayPrice = room.price
-        ? `${(room.price * 1000).toLocaleString('vi-VN')} VND / đêm`
-        : "";
+  const displayPrice = room.price
+    ? `${(room.price * 1000).toLocaleString("vi-VN")} VND / đêm`
+    : "";
 
-    return (
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-            <img
-                src={room.image}
-                alt={room.name}
-                className="rounded-lg mb-4 w-full h-48 object-cover"
-            />
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">{room.name}</h3>
-            <p className="text-gray-600 mb-2">{room.description}</p>
-            <p className="text-yellow-600 font-bold text-lg mb-4">{displayPrice}</p>
-            <button
-                onClick={() => onBook(room)}
-                className="bg-yellow-600 text-white px-6 py-3 rounded-lg hover:bg-yellow-700 uppercase font-bold tracking-widest"
-            >
-                Đặt ngay
-            </button>
-        </div>
-    );
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-lg">
+      <img
+        src={room.image}
+        alt={room.name}
+        className="rounded-lg mb-4 w-full h-48 object-cover"
+      />
+      <h3 className="text-2xl font-bold text-gray-800 mb-2">{room.name}</h3>
+      <p className="text-gray-600 mb-2">{room.description}</p>
+      <p className="text-yellow-600 font-bold text-lg mb-4">{displayPrice}</p>
+      <button
+        onClick={() => onBook(room)}
+        className="bg-yellow-600 text-white px-6 py-3 rounded-lg hover:bg-yellow-700 uppercase font-bold tracking-widest"
+      >
+        Đặt ngay
+      </button>
+    </div>
+  );
 };
 
-const token = localStorage.getItem('Token: ');
+const token = localStorage.getItem("Token: ");
 
 const RoomsPage = () => {
-    const [rooms, setRooms] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+  const [rooms, setRooms] = useState([]);
+  const [filteredRooms, setFilteredRooms] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [roomType, setRoomType] = useState("ALL");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchRooms = async () => {
-            setLoading(true);
-            try {
-                const response = await axiosInstance.get('/room/all');
-                console.log(response.roomList);
-                if (response && response.roomList) {
-                    const data = response.roomList;
-                    const familyRooms = data
-                        .filter(room => room.type.name === "FAMILY")
-                        .sort(() => 0.5 - Math.random())
-                        .slice(0, Math.min(2, data.filter(room => room.type.name === "FAMILY").length));
-                    const coupleRooms = data
-                        .filter(room => room.type.name === "COUPLE")
-                        .sort(() => 0.5 - Math.random())
-                        .slice(0, Math.min(2, data.filter(room => room.type.name === "COUPLE").length));
-                    const vipRooms = data
-                        .filter(room => room.type.name === "VIP")
-                        .sort(() => 0.5 - Math.random())
-                        .slice(0, Math.min(2, data.filter(room => room.type.name === "VIP").length));
-                    const selectedRooms = [...familyRooms, ...coupleRooms, ...vipRooms].filter(room => room);
-                    setRooms(selectedRooms);
-                }
-            } catch (error) {
-                console.error('Lỗi khi lấy dữ liệu phòng:', error);
-                setRooms([
-                    {
-                        name: "Phòng Gia đình 1",
-                        description: "Thoải mái cho gia đình.",
-                        image: "path/to/family_image1.jpg",
-                        type: "FAMILY",
-                        price: 1500
-                    },
-                    {
-                        name: "Phòng Gia đình 2",
-                        description: "Thoải mái cho gia đình lớn.",
-                        image: "path/to/family_image2.jpg",
-                        type: "FAMILY",
-                        price: 1800
-                    },
-                    {
-                        name: "Phòng Cặp đôi 1",
-                        description: "Lãng mạn dành cho các cặp đôi.",
-                        image: "path/to/couple_image1.jpg",
-                        type: "COUPLE",
-                        price: 1200
-                    },
-                    {
-                        name: "Phòng Cặp đôi 2",
-                        description: "Không gian ấm cúng cho hai người.",
-                        image: "path/to/couple_image2.jpg",
-                        type: "COUPLE",
-                        price: 1300
-                    },
-                    {
-                        name: "Phòng VIP 1",
-                        description: "Sang trọng với tiện nghi cao cấp.",
-                        image: "path/to/vip_image1.jpg",
-                        type: "VIP",
-                        price: 2500
-                    },
-                    {
-                        name: "Phòng VIP 2",
-                        description: "Đẳng cấp với view đẹp.",
-                        image: "path/to/vip_image2.jpg",
-                        type: "VIP",
-                        price: 3000
-                    }
-                ]);
-            } finally {
-                setLoading(false);
-            }
-        };
+  // Xử lý input giá chỉ cho phép số dương
+  const handlePriceInput = (value, setter) => {
+    if (value === "" || (parseFloat(value) >= 0 && !isNaN(value))) {
+      setter(value);
+    }
+  };
 
-        localStorage.removeItem('SelectedRoomId');
-        localStorage.removeItem('SelectedRoom'); 
-        fetchRooms();
-    }, []);
-
-    const handleBook = (room) => {
-        localStorage.setItem('SelectedRoomId', room.id);
-        localStorage.setItem('SelectedRoom', JSON.stringify(room));
-        if (token) {
-            navigate('/bookingpage', { state: { room } });
-        } else {
-            navigate('/login');
+  useEffect(() => {
+    const fetchRooms = async () => {
+      setLoading(true);
+      try {
+        const response = await axiosInstance.get("/room/all");
+        if (response && response.roomList) {
+          setRooms(response.roomList);
+          setFilteredRooms(response.roomList);
         }
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu phòng:", error);
+        setRooms([
+          {
+            id: 1,
+            name: "Phòng Gia đình 1",
+            description: "Thoải mái cho gia đình.",
+            image: "path/to/family_image1.jpg",
+            type: { name: "FAMILY" },
+            price: 1500,
+          },
+          {
+            id: 2,
+            name: "Phòng Cặp đôi 1",
+            description: "Lãng mạn dành cho nông dân.",
+            image: "path/to/couple_image1.jpg",
+            type: { name: "COUPLE" },
+            price: 1200,
+          },
+          {
+            id: 3,
+            name: "Phòng VIP 1",
+            description: "Sang trọng với tiện nghi cao cấp.",
+            image: "path/to/vip_image1.jpg",
+            type: { name: "VIP" },
+            price: 2500,
+          },
+        ]);
+        setFilteredRooms(rooms);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    return (
-        <div className="bg-gray-100 min-h-screen">
-            <Header />
-            <section
-                className="bg-cover bg-center h-[50vh] flex items-center justify-center mt-[-50px]"
-                style={{ backgroundImage: `url(${imgbg})` }}
-            >
-                <div className="container mx-auto px-6 py-16 text-center">
-                    <h1 className="text-8xl font-bold text-white mb-4 font-pacifico">Phòng</h1>
-                </div>
-            </section>
-            <div className="bg-gray-50 py-12">
-                <div className="container mx-auto px-6">
-                    <h1 className="text-5xl font-bold text-gray-900 flex items-center">
-                        <span className="border-r-8 border-yellow-600 pr-4 mr-4 font-pacifico">
-                            Loại phòng
-                        </span>
-                        <span className="text-yellow-600 text-3xl">Các phòng của chúng tôi</span>
-                    </h1>
-                    {loading ? (
-                        <p className="text-center text-gray-600 mt-8">Đang tải dữ liệu...</p>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-                            {rooms.map((room, index) => (
-                                <RoomCard key={index} room={room} onBook={handleBook} />
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
-            <Footer />
+    localStorage.removeItem("SelectedRoomId");
+    localStorage.removeItem("SelectedRoom");
+    fetchRooms();
+  }, []);
+
+  // Lọc phòng theo loại phòng và khoảng giá
+  useEffect(() => {
+    let filtered = rooms;
+
+    // Lọc theo loại phòng
+    if (roomType !== "ALL") {
+      filtered = filtered.filter((room) => room.type.name === roomType);
+    }
+
+    // Lọc theo khoảng giá
+    if (minPrice !== "") {
+      filtered = filtered.filter((room) => room.price >= parseFloat(minPrice));
+    }
+    if (maxPrice !== "") {
+      filtered = filtered.filter((room) => room.price <= parseFloat(maxPrice));
+    }
+
+    setFilteredRooms(filtered);
+  }, [roomType, minPrice, maxPrice, rooms]);
+
+  const handleBook = (room) => {
+    localStorage.setItem("SelectedRoomId", room.id);
+    localStorage.setItem("SelectedRoom", JSON.stringify(room));
+    if (token) {
+      navigate("/bookingpage", { state: { room } });
+    } else {
+      navigate("/login");
+    }
+  };
+
+  return (
+    <div className="bg-gray-100 min-h-screen">
+      <Header />
+      <section
+        className="bg-cover bg-center h-[50vh] flex items-center justify-center mt-[-50px]"
+        style={{ backgroundImage: `url(${imgbg})` }}
+      >
+        <div className="container mx-auto px-6 py-16 text-center">
+          <h1 className="text-8xl font-bold text-white mb-4 font-pacifico">Phòng</h1>
         </div>
-    );
+      </section>
+      <div className="bg-gray-50 py-12">
+        <div className="container mx-auto px-6">
+          <h1 className="text-5xl font-bold text-gray-900 flex items-center">
+            <span className="border-r-8 border-yellow-600 pr-4 mr-4 font-pacifico">
+              Loại phòng
+            </span>
+            <span className="text-yellow-600 text-3xl">Các phòng của chúng tôi</span>
+          </h1>
+
+          {/* Bộ lọc */}
+          <div className="mt-6 flex flex-col md:flex-row gap-4">
+            <div>
+              <label className="text-gray-700 font-bold mr-2">Loại phòng:</label>
+              <select
+                value={roomType}
+                onChange={(e) => setRoomType(e.target.value)}
+                className="border rounded-lg px-4 py-2"
+              >
+                <option value="ALL">Tất cả</option>
+                <option value="FAMILY">Gia đình</option>
+                <option value="COUPLE">Cặp đôi</option>
+                <option value="VIP">VIP</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-gray-700 font-bold mr-2">Giá tối thiểu (nghìn VND):</label>
+              <input
+                type="number"
+                value={minPrice}
+                onChange={(e) => handlePriceInput(e.target.value, setMinPrice)}
+                className="border rounded-lg px-4 py-2"
+                placeholder="VD: 1000"
+                min="0"
+              />
+            </div>
+            <div>
+              <label className="text-gray-700 font-bold mr-2">Giá tối đa (nghìn VND):</label>
+              <input
+                type="number"
+                value={maxPrice}
+                onChange={(e) => handlePriceInput(e.target.value, setMaxPrice)}
+                className="border rounded-lg px-4 py-2"
+                placeholder="VD: 3000"
+                min="0"
+              />
+            </div>
+          </div>
+
+          {loading ? (
+            <p className="text-center text-gray-600 mt-8">Đang tải dữ liệu...</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+              {filteredRooms.length > 0 ? (
+                filteredRooms.map((room, index) => (
+                  <RoomCard key={index} room={room} onBook={handleBook} />
+                ))
+              ) : (
+                <p className="text-center text-gray-600">
+                  Không có phòng phù hợp với tiêu chí tìm kiếm.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+      <Footer />
+    </div>
+  );
 };
 
 export default RoomsPage;

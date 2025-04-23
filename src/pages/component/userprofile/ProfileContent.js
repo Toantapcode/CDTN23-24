@@ -44,7 +44,7 @@ const ProfileContent = () => {
             setUserData(updatedUser);
             setModalVisible(false);
         } catch (error) {
-            message.error('Cập nhật thất bại!');
+            toast.error('Tên người dùng tối thiểu 5 ký tự!');
             console.error('Lỗi:', error);
         }
     };
