@@ -11,20 +11,20 @@ import ContactPage from "../pages/component/contact";
 
 
 const publicRoutes = [
-    { path: "/", component: HomePage },
-    { path: "/login", component: LoginPage },
-    { path: "/register", component: RegisterPage },
-    { path: "/rooms", component: RoomsPage },
-    { path: "/introduce", component: IntroducePage },
-    { path: "/userprofile", component: UserProfile },
-    { path: "/bookingpage", component: BookingPage },
-    { path: "/contact", component: ContactPage },
+    { path: "/", component: HomePage, title: 'Trang chủ'  },
+    { path: "/login", component: LoginPage, title: 'Đăng nhập'  },
+    { path: "/register", component: RegisterPage, title: 'Đăng ký'  },
+    { path: "/rooms", component: RoomsPage, title: 'Phòng'  },
+    { path: "/introduce", component: IntroducePage, title: 'Giới thiệu'  },
+    { path: "/userprofile", component: UserProfile, title: 'Thông tin cá nhân'  },
+    { path: "/bookingpage", component: BookingPage, title: 'Đặt phòng'  },
+    { path: "/contact", component: ContactPage, title: 'Liên hệ'  },
 
-];
+]; 
 
 const privateRoutes = [
-    { path: "/admin", component: Admin },
-    { path: "/dashboard", component: Dashboard },
+    { path: "/admin", component: Admin, title: 'Quản lý'  },
+    { path: "/dashboard", component: Dashboard, title: 'Thông tin'  },
 ];
 
 export { publicRoutes, privateRoutes };

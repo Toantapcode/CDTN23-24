@@ -41,7 +41,6 @@ const RoomsPage = () => {
   const [maxPrice, setMaxPrice] = useState("");
   const navigate = useNavigate();
 
-  // Xử lý input giá chỉ cho phép số dương
   const handlePriceInput = (value, setter) => {
     if (value === "" || (parseFloat(value) >= 0 && !isNaN(value))) {
       setter(value);
@@ -53,6 +52,7 @@ const RoomsPage = () => {
       setLoading(true);
       try {
         const response = await axiosInstance.get("/room/all");
+        console.log('response: ', response)
         if (response && response.roomList) {
           setRooms(response.roomList);
           setFilteredRooms(response.roomList);
@@ -60,30 +60,6 @@ const RoomsPage = () => {
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu phòng:", error);
         setRooms([
-          {
-            id: 1,
-            name: "Phòng Gia đình 1",
-            description: "Thoải mái cho gia đình.",
-            image: "path/to/family_image1.jpg",
-            type: { name: "FAMILY" },
-            price: 1500,
-          },
-          {
-            id: 2,
-            name: "Phòng Cặp đôi 1",
-            description: "Lãng mạn dành cho nông dân.",
-            image: "path/to/couple_image1.jpg",
-            type: { name: "COUPLE" },
-            price: 1200,
-          },
-          {
-            id: 3,
-            name: "Phòng VIP 1",
-            description: "Sang trọng với tiện nghi cao cấp.",
-            image: "path/to/vip_image1.jpg",
-            type: { name: "VIP" },
-            price: 2500,
-          },
         ]);
         setFilteredRooms(rooms);
       } finally {
@@ -96,16 +72,13 @@ const RoomsPage = () => {
     fetchRooms();
   }, []);
 
-  // Lọc phòng theo loại phòng và khoảng giá
   useEffect(() => {
     let filtered = rooms;
 
-    // Lọc theo loại phòng
     if (roomType !== "ALL") {
       filtered = filtered.filter((room) => room.type.name === roomType);
     }
 
-    // Lọc theo khoảng giá
     if (minPrice !== "") {
       filtered = filtered.filter((room) => room.price >= parseFloat(minPrice));
     }
@@ -146,7 +119,6 @@ const RoomsPage = () => {
             <span className="text-yellow-600 text-3xl">Các phòng của chúng tôi</span>
           </h1>
 
-          {/* Bộ lọc */}
           <div className="mt-6 flex flex-col md:flex-row gap-4">
             <div>
               <label className="text-gray-700 font-bold mr-2">Loại phòng:</label>
