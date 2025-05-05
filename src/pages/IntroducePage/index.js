@@ -3,6 +3,10 @@ import Header from "../component/header";
 import Footer from "../component/footer";
 import imgbg from "../../assets/image/hero3.webp";
 import imgAbout from '../../assets/image/about.jpg';
+import imgChef from '../../assets/employee/chef.png';
+import imgManagerGeneral from '../../assets/employee/victoria.png';
+import imgManager from '../../assets/employee/jenifer.png';
+import imgReception from '../../assets/employee/reception.png';
 import { Card, Row, Col } from 'antd';
 import { FaUtensils, FaBicycle, FaSwimmer, FaGlassCheers, FaSpa, FaGolfBall } from 'react-icons/fa';
 
@@ -12,22 +16,22 @@ const IntroducePage = () => {
         {
             name: "Victoria",
             role: "Giám đốc điều hành",
-            image: "https://via.placeholder.com/200", // Thay ảnh phù hợp
+            image: imgManagerGeneral, 
         },
         {
             name: "Man",
             role: "Bếp trưởng",
-            image: "https://via.placeholder.com/200", // Thay ảnh phù hợp
+            image: imgChef,
         },
         {
             name: "Jennifer",
             role: "Quản lý",
-            image: "https://via.placeholder.com/200", // Thay ảnh phù hợp
+            image: imgManager,
         },
         {
             name: "Sara",
             role: "Tiếp tân",
-            image: "https://via.placeholder.com/200", // Thay ảnh phù hợp
+            image: imgReception,
         },
     ];
 
