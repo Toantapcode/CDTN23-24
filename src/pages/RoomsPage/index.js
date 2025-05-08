@@ -13,7 +13,7 @@ const RoomCard = ({ room, onBook }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
       <img
-        src={room.image}
+ Warren        src={room.image}
         alt={room.name}
         className="rounded-lg mb-4 w-full h-48 object-cover"
       />
@@ -36,7 +36,9 @@ const RoomsPage = () => {
   const [rooms, setRooms] = useState([]);
   const [filteredRooms, setFilteredRooms] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [roomType, setRoomType] = useState("ALL");
+  const [checkInDate, setCheckInDate] = useState("");
+  const [checkOutDate, setCheckOutDate] = useState("");
+  const [roomTypeId, setRoomTypeId] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const navigate = useNavigate();
@@ -47,21 +49,34 @@ const RoomsPage = () => {
     }
   };
 
+  const formatDate = (date) => {
+    if (!date) return "";
+    const d = new Date(date);
+    return d.toISOString().split("T")[0]; 
+  };
+
   useEffect(() => {
     const fetchRooms = async () => {
+      if (!checkInDate || !checkOutDate || !roomTypeId) return;
+
       setLoading(true);
       try {
-        const response = await axiosInstance.get("/room/all");
-        console.log('response: ', response)
+        const response = await axiosInstance.get(
+          `/room/availableRoomsByDateAndType?checkInDate=${formatDate(
+            checkInDate
+          )}&checkOutDate=${formatDate(checkOutDate)}&roomTypeId=${roomTypeId}`
+        );
         if (response && response.roomList) {
           setRooms(response.roomList);
           setFilteredRooms(response.roomList);
+        } else {
+          setRooms([]);
+          setFilteredRooms([]);
         }
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu phòng:", error);
-        setRooms([
-        ]);
-        setFilteredRooms(rooms);
+        setRooms([]);
+        setFilteredRooms([]);
       } finally {
         setLoading(false);
       }
@@ -70,14 +85,10 @@ const RoomsPage = () => {
     localStorage.removeItem("SelectedRoomId");
     localStorage.removeItem("SelectedRoom");
     fetchRooms();
-  }, []);
+  }, [checkInDate, checkOutDate, roomTypeId]);
 
   useEffect(() => {
     let filtered = rooms;
-
-    if (roomType !== "ALL") {
-      filtered = filtered.filter((room) => room.type.name === roomType);
-    }
 
     if (minPrice !== "") {
       filtered = filtered.filter((room) => room.price >= parseFloat(minPrice));
@@ -87,7 +98,7 @@ const RoomsPage = () => {
     }
 
     setFilteredRooms(filtered);
-  }, [roomType, minPrice, maxPrice, rooms]);
+  }, [minPrice, maxPrice, rooms]);
 
   const handleBook = (room) => {
     localStorage.setItem("SelectedRoomId", room.id);
@@ -121,16 +132,38 @@ const RoomsPage = () => {
 
           <div className="mt-6 flex flex-col md:flex-row gap-4">
             <div>
+              <label className="text-gray-700 font-bold mr-2">Ngày nhận phòng:</label>
+              <input
+                type="date"
+                value={checkInDate}
+                onChange={(e) => setCheckInDate(e.target.value)}
+                className="border rounded-lg px-4 py-2"
+                min={formatDate(new Date())}
+              />
+            </div>
+            <div>
+              <label className="text-gray-700 font-bold mr-2">Ngày trả phòng:</label>
+              <input
+                type="date"
+                value={checkOutDate}
+                onChange={(e) => setCheckOutDate(e.target.value)}
+                className="border rounded-lg px-4 py-2"
+                min={checkInDate || formatDate(new Date())}
+              />
+            </div>
+            <div>
               <label className="text-gray-700 font-bold mr-2">Loại phòng:</label>
               <select
-                value={roomType}
-                onChange={(e) => setRoomType(e.target.value)}
+                value={roomTypeId}
+                onChange={(e) => setRoomTypeId(e.target.value)}
                 className="border rounded-lg px-4 py-2"
               >
-                <option value="ALL">Tất cả</option>
-                <option value="FAMILY">Gia đình</option>
-                <option value="COUPLE">Cặp đôi</option>
-                <option value="VIP">VIP</option>
+                <option value="" disabled>
+                  Chọn loại phòng
+                </option>
+                <option value="1">Gia đình</option>
+                <option value="2">Cặp đôi</option>
+                <option value="3">VIP</option>
               </select>
             </div>
             <div>

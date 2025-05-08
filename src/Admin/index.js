@@ -9,6 +9,8 @@ import BookingPage from './pages/Booking';
 import ServicePage from './pages/Service';
 import RolePage from './pages/RolePage'
 import Invoice from './pages/Invoice';
+import Voucher from './pages/Voucher'
+import Rate from './pages/Rate'
 
 export default function Admin() {
     const [content, setContent] = useState('dashboard');
@@ -30,7 +32,11 @@ export default function Admin() {
             case 'service':
                 return <ServicePage />;
             case 'invoice':
-                return <Invoice />; 
+                return <Invoice />;
+            case 'voucher':
+                return <Voucher />;
+            case 'rate':
+                return <Rate />;
             default:
                 return <Dashboard />;
         }

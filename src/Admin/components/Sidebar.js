@@ -7,6 +7,8 @@ import {
     HomeOutlined,
     TagsOutlined,
     DollarCircleOutlined,
+    GiftOutlined,
+    StarOutlined,
     LogoutOutlined
 } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
@@ -64,6 +66,16 @@ const Sidebar = ({ onMenuClick }) => {
             key: 'invoice',
             label: 'Hóa đơn',
             icon: <DollarCircleOutlined />,
+        },
+        {
+            key: 'voucher',
+            label: 'Mã giảm giá',
+            icon: <GiftOutlined  />,
+        },
+        {
+            key: 'rate',
+            label: 'Đánh giá',
+            icon: <StarOutlined  />,
         },
         {
             key: 'logout',

@@ -2,10 +2,17 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../../request';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
+import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 
 const BookingHistory = () => {
     const [bookings, setBookings] = useState([]);
     const [selectedBookingID, setSelectedBookingID] = useState(null);
+    const [showReviewModal, setShowReviewModal] = useState(false);
+    const [selectedBookingForReview, setSelectedBookingForReview] = useState(null);
+    const [rating, setRating] = useState(0);
+    const [comment, setComment] = useState('');
 
     const storedUser = localStorage.getItem('User: ');
     const userData = storedUser ? JSON.parse(storedUser) : null;
@@ -32,11 +39,11 @@ const BookingHistory = () => {
         const checkOut = new Date(checkOutDate);
 
         if (today < checkIn) {
-            return { status: 'Đã đặt phòng', color: 'bg-blue-100 text-blue-800', canCancel: true };
+            return { status: 'Đã đặt phòng', color: 'bg-blue-100 text-blue-800', canCancel: true, canReview: false };
         } else if (today >= checkIn && today <= checkOut) {
-            return { status: 'Đang sử dụng', color: 'bg-green-100 text-green-800', canCancel: false };
+            return { status: 'Đang sử dụng', color: 'bg-green-100 text-green-800', canCancel: false, canReview: false };
         } else {
-            return { status: 'Đã trả phòng', color: 'bg-gray-100 text-gray-800', canCancel: false };
+            return { status: 'Đã trả phòng', color: 'bg-gray-100 text-gray-800', canCancel: false, canReview: true };
         }
     };
 
@@ -53,12 +60,12 @@ const BookingHistory = () => {
             });
             return;
         }
-    
+
         const today = new Date();
         const checkIn = new Date(booking.checkInDate);
         const diffTime = checkIn.getTime() - today.getTime();
         const diffDays = diffTime / (1000 * 60 * 60 * 24);
-    
+
         if (diffDays < 2) {
             toast.error('Bạn chỉ được phép hủy phòng trước ít nhất 2 ngày so với ngày nhận phòng.', {
                 position: 'top-right',
@@ -66,14 +73,13 @@ const BookingHistory = () => {
             });
             return;
         }
-    
+
         try {
             await axiosInstance.delete(`/booking/cancel/${bookingId}`);
             toast.success('Hủy đặt phòng thành công!', {
                 position: 'top-right',
                 autoClose: 3000,
             });
-            // Refresh bookings after cancellation
             const response = await axiosInstance.get(`/user/getUserBooking/${userId}`);
             setBookings(response.user.bookings);
         } catch (error) {
@@ -85,6 +91,50 @@ const BookingHistory = () => {
         }
     };
 
+    const openReviewModal = (booking) => {
+        setSelectedBookingForReview(booking);
+        setShowReviewModal(true);
+        setRating(0);
+        setComment('');
+    };
+
+    const closeReviewModal = () => {
+        setShowReviewModal(false);
+        setSelectedBookingForReview(null);
+    };
+
+    const handleSubmitReview = async () => {
+        if (!rating) {
+            toast.error('Vui lòng chọn số sao đánh giá.', {
+                position: 'top-right',
+                autoClose: 3000,
+            });
+            return;
+        }
+
+        try {
+            const reviewData = {
+                userId: userId,
+                roomId: selectedBookingForReview.room?.id,
+                rating: rating,
+                comment: comment || '',
+            };
+            console.log(reviewData)
+
+            await axiosInstance.post('/review/create', reviewData);
+            toast.success('Gửi đánh giá thành công!', {
+                position: 'top-right',
+                autoClose: 3000,
+            });
+            closeReviewModal();
+        } catch (error) {
+            console.error('Lỗi khi gửi đánh giá:', error);
+            toast.error(error.em || 'Gửi đánh giá thất bại. Vui lòng thử lại.', {
+                position: 'top-right',
+                autoClose: 3000,
+            });
+        }
+    };
 
     if (!userId) {
         return (
@@ -118,7 +168,7 @@ const BookingHistory = () => {
                     return 3;
             }
         };
-    
+
         return getPriority(a) - getPriority(b);
     });
 
@@ -127,7 +177,7 @@ const BookingHistory = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Lịch sử đặt phòng</h2>
             <div className="space-y-6">
                 {sortedBookings.map((booking) => {
-                    const { status, color, canCancel } = getBookingStatus(booking.checkInDate, booking.checkOutDate);
+                    const { status, color, canCancel, canReview } = getBookingStatus(booking.checkInDate, booking.checkOutDate);
                     return (
                         <div
                             key={booking.id}
@@ -152,17 +202,30 @@ const BookingHistory = () => {
                                     >
                                         Trạng thái: {status}
                                     </span>
-                                    {canCancel && (
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation(); 
-                                                handleCancelBooking(booking.id);
-                                            }}
-                                            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 text-sm font-medium transition-colors"
-                                        >
-                                            Hủy
-                                        </button>
-                                    )}
+                                    <div className="flex gap-2">
+                                        {canCancel && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleCancelBooking(booking.id);
+                                                }}
+                                                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 text-sm font-medium transition-colors"
+                                            >
+                                                Hủy
+                                            </button>
+                                        )}
+                                        {canReview && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    openReviewModal(booking);
+                                                }}
+                                                className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 text-sm font-medium transition-colors"
+                                            >
+                                                Đánh giá
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                             {selectedBookingID === booking.id && (
@@ -199,6 +262,56 @@ const BookingHistory = () => {
                     );
                 })}
             </div>
+
+            {showReviewModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                        <h3 className="text-lg font-bold mb-4">Đánh giá phòng</h3>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Cảm nhận của bạn thế nào về trải nghiệm tại khách sạn?
+                            </label>
+                            <div className="flex gap-1">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <FontAwesomeIcon
+                                        key={star}
+                                        icon={star <= rating ? faStarSolid : faStarRegular}
+                                        className={`h-6 w-6 cursor-pointer ${star <= rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                                        onClick={() => setRating(star)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Nhận xét
+                            </label>
+                            <textarea
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                rows="4"
+                                placeholder="Nhập nhận xét của bạn..."
+                            />
+                        </div>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={closeReviewModal}
+                                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 text-sm font-medium transition-colors"
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={handleSubmitReview}
+                                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-medium transition-colors"
+                            >
+                                Gửi đánh giá
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <ToastContainer />
         </div>
     );

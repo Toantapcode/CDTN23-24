@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaInstagram, FaFacebook, FaTwitter, FaGithub } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import axiosInstance from '../../request';
+import TermsPopup from './TermsPopup';
 
 function RegisterPage() {
     const [name, setName] = useState('');
@@ -12,6 +13,7 @@ function RegisterPage() {
     const [agreeTerms, setAgreeTerms] = useState(false);
     const [error, setError] = useState('');
     const [isRegistered, setIsRegistered] = useState(false);
+    const [isTermsOpen, setIsTermsOpen] = useState(false);
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
@@ -70,6 +72,7 @@ function RegisterPage() {
             }
         }
     }
+
     if (isRegistered) {
         return (
             <div className="min-h-screen w-full bg-cover bg-center flex items-center justify-center p-4"
@@ -112,7 +115,7 @@ function RegisterPage() {
                 closeOnClick
                 rtl={false}
                 pauseOnFocusLoss
-                draggablex
+                draggable
                 pauseOnHover
             />
             <div className="w-full max-w-4xl bg-black/20 backdrop-blur-sm rounded-2xl overflow-hidden shadow-2xl flex">
@@ -185,7 +188,12 @@ function RegisterPage() {
                             <div className="flex items-center justify-between text-white">
                                 <label className="flex items-center">
                                     <input type="checkbox" className="mr-2" checked={agreeTerms} onChange={(e) => setAgreeTerms(e.target.checked)} />
-                                    Tôi đồng ý với các điều khoản và điều kiện
+                                    <span
+                                        className="cursor-pointer hover:underline"
+                                        onClick={() => setIsTermsOpen(true)}
+                                    >
+                                        Tôi đồng ý với các điều khoản và điều kiện
+                                    </span>
                                 </label>
                                 {error && error.includes('điều khoản') && <p className="text-red-500 text-sm mt-1">{error}</p>}
                             </div>
@@ -196,12 +204,13 @@ function RegisterPage() {
                                 Đăng ký
                             </button>
                             <p className="text-center text-white">
-                                Đã có tài khoản  ? <a href="/login" className="hover:underline">Đăng nhập</a>
+                                Đã có tài khoản? <a href="/login" className="hover:underline">Đăng nhập</a>
                             </p>
                         </form>
                     </div>
                 </div>
             </div>
+            <TermsPopup isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
         </div>
     );
 };

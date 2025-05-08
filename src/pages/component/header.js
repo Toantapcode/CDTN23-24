@@ -57,67 +57,71 @@ export default function Header() {
     };
 
     return (
-        <header
-            className={`fixed top-0 left-0 w-full ${isScrolled ? "h-12 bg-white/80 backdrop-blur-lg shadow-md" : "h-16 bg-white/60 backdrop-blur-lg shadow-lg"
-                } p-4 z-[9999] transition-all duration-300 ease-in-out`}
-        >
-            <div className="container mx-auto flex items-center justify-between px-6">
-                <a href="/">
-                    <div className={`relative transform rotate-45 p-2 border-2 border-yellow-600 transition-all duration-300 ${isScrolled ? "scale-75" : "scale-100"}`}>
-                        <img src={logo}
-                            alt="LuxeStay Logo"
-                            className={`transform rotate-[-45deg] border-2 border-yellow-600 transition-all duration-300 ${isScrolled ? "w-[70px]" : "w-[90px]"}`}
-                        />
-                    </div>
-                </a>
-                <nav className={`flex space-x-4 uppercase font-bold text-xl transition-all duration-300 ${isScrolled ? "translate-y-[-37px]" : "translate-y-[-37px]"}`}>
-                    <a href="/" className="text-yellow-800 hover:text-yellow-600">Trang chủ</a>
-                    <a href="introduce" className="text-yellow-800 hover:text-yellow-600">Giới thiệu</a>
-                    <a href="rooms" className="text-yellow-800 hover:text-yellow-600">Phòng</a>
-                    <a href="contact" className="text-yellow-800 hover:text-yellow-600">Liên hệ</a>
-                    {token ? (
-                        <div className="relative" ref={dropdownRef}>
-                            <a onClick={handleAvatarClick} className="mt-[-4px] cursor-pointer"><Avatar /></a>
-                            {isDropdownOpen && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
-                                    <a
-                                        href="/userprofile"
-                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100 hover:text-yellow-800"
-                                        onClick={() => setIsDropdownOpen(false)}
-                                    >
-                                        Thông tin tài khoản
-                                    </a>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100 hover:text-yellow-800"
-                                    >
-                                        Đăng xuất
-                                    </button>
-                                </div>
-                            )}
+        <>
+            <header
+                className={`fixed top-0 left-0 w-full ${isScrolled ? "h-12 bg-white/80 backdrop-blur-lg shadow-md" : "h-16 bg-white/60 backdrop-blur-lg shadow-lg"
+                    } p-4 z-[9999] transition-all duration-300 ease-in-out`}
+            >
+                <div className="container mx-auto flex items-center justify-between px-6">
+                    <a href="/">
+                        <div className={`relative transform rotate-45 p-2 border-2 border-yellow-600 transition-all duration-300 ${isScrolled ? "scale-75" : "scale-100"}`}>
+                            <img
+                                src={logo}
+                                alt="LuxeStay Logo"
+                                className={`transform rotate-[-45deg] border-2 border-yellow-600 transition-all duration-300 ${isScrolled ? "w-[70px]" : "w-[90px]"}`}
+                            />
                         </div>
-                    ) : (
-                        <div className="flex space-x-2">
-                            <button
-                                onClick={() => navigate('/login')}
-                                className="bg-yellow-800 text-white text-sm px-3 py-1 rounded hover:bg-yellow-700 transition-colors duration-200"
-                            >
-                                Đăng nhập
-                            </button>
-                            <button
-                                onClick={() => navigate('/register')}
-                                className="bg-yellow-800 text-white text-sm px-3 py-1 rounded hover:bg-yellow-700 transition-colors duration-200"
-                            >
-                                Đăng ký
-                            </button>
-                        </div>
-                    )}
-                </nav>
-            </div>
+                    </a>
+                    <nav className={`flex space-x-4 uppercase font-bold text-xl transition-all duration-300 ${isScrolled ? "translate-y-[-37px]" : "translate-y-[-37px]"}`}>
+                        <a href="/" className="text-yellow-800 hover:text-yellow-600">Trang chủ</a>
+                        <a href="introduce" className="text-yellow-800 hover:text-yellow-600">Giới thiệu</a>
+                        <a href="rooms" className="text-yellow-800 hover:text-yellow-600">Phòng</a>
+                        <a href="contact" className="text-yellow-800 hover:text-yellow-600">Liên hệ</a>
+                        {token ? (
+                            <div className="relative" ref={dropdownRef}>
+                                <a onClick={handleAvatarClick} className="mt-[-4px] cursor-pointer"><Avatar /></a>
+                                {isDropdownOpen && (
+                                    <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                                        <a
+                                            href="/userprofile"
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100 hover:text-yellow-800"
+                                            onClick={() => setIsDropdownOpen(false)}
+                                        >
+                                            Thông tin tài khoản
+                                        </a>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100 hover:text-yellow-800"
+                                        >
+                                            Đăng xuất
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="flex space-x-2">
+                                <button
+                                    onClick={() => navigate('/login')}
+                                    className="bg-yellow-800 text-white text-sm px-3 py-1 rounded hover:bg-yellow-700 transition-colors duration-200"
+                                >
+                                    Đăng nhập
+                                </button>
+                                <button
+                                    onClick={() => navigate('/register')}
+                                    className="bg-yellow-800 text-white text-sm px-3 py-1 rounded hover:bg-yellow-700 transition-colors duration-200"
+                                >
+                                    Đăng ký
+                                </button>
+                            </div>
+                        )}
+                    </nav>
+                </div>
+            </header>
+
             {showLogoutConfirm && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[10000]">
-                    <div className="bg-white p-6 rounded-lg shadow-xl">
-                        <p className="text-lg mb-4">Bạn có chắc chắn muốn đăng xuất?</p>
+                    <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-sm">
+                        <p className="text-lg mb-4 text-center">Bạn có chắc chắn muốn đăng xuất?</p>
                         <div className="flex justify-end space-x-4">
                             <button
                                 onClick={cancelLogout}
@@ -135,6 +139,6 @@ export default function Header() {
                     </div>
                 </div>
             )}
-        </header>
+        </>
     );
 }
