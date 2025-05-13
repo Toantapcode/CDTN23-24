@@ -199,24 +199,6 @@ const Voucher = () => {
                 pauseOnHover
             />
             <h2 className="text-lg font-semibold mb-4">Quản lý Voucher</h2>
-            <Popconfirm
-                title="Bạn có chắc chắn muốn xóa các voucher đã chọn?"
-                description={`Sẽ xóa ${selectedRowKeys.length} voucher. Hành động này không thể hoàn tác!`}
-                onConfirm={handleDeleteMany}
-                okText="Xóa"
-                cancelText="Hủy"
-                okButtonProps={{ danger: true }}
-                disabled={selectedRowKeys.length === 0}
-            >
-                <Button
-                    type="danger"
-                    icon={<DeleteOutlined />}
-                    disabled={selectedRowKeys.length === 0}
-                    className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white mb-4"
-                >
-                    Xóa đã chọn ({selectedRowKeys.length})
-                </Button>
-            </Popconfirm>
             <div className="flex justify-between items-center mb-4">
                 <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>Thêm Voucher</Button>
             </div>

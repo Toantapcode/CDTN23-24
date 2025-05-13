@@ -16,6 +16,17 @@ import { useNavigate } from "react-router-dom";
 const Sidebar = ({ onMenuClick }) => {
     const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
+    let userRole = null;
+    try {
+        const userData = localStorage.getItem('User: ');
+        if (userData) {
+            const parsedData = JSON.parse(userData);
+            userRole = Array.isArray(parsedData.roles) ? parsedData.roles[0] : parsedData.roles;
+        }
+    } catch (error) {
+        console.error('Error parsing userData:', error);
+    }
+
     const menuItems = [
         {
             key: 'dashboard',
@@ -84,6 +95,10 @@ const Sidebar = ({ onMenuClick }) => {
         },
     ];
 
+    const filteredMenuItems = userRole === 'ADMIN' 
+        ? menuItems.filter(item => item.key !== 'user')
+        : menuItems;
+
     const navigate = useNavigate();
 
     const handleLogoutClick = () => {
@@ -94,7 +109,7 @@ const Sidebar = ({ onMenuClick }) => {
         try {
             localStorage.removeItem('Token: ');
             localStorage.removeItem('User: ');
-            navigate('/login');
+            navigate('/');
         } catch (error) {
             console.error('Lỗi khi đăng xuất:', error);
         }
@@ -120,7 +135,7 @@ const Sidebar = ({ onMenuClick }) => {
                 className="w-[12%] min-h-screen rounded-lg shadow-lg mt-5 ml-10 pt-5 space-y-4 font-bold"
                 onClick={handleMenuClick}
             >
-                {menuItems.map((item) =>
+                {filteredMenuItems.map((item) =>
                     item.children ? (
                         <Menu.SubMenu key={item.key} icon={item.icon} title={item.label}>
                             {item.children.map((subItem) => (

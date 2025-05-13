@@ -37,12 +37,7 @@ function LoginPage() {
 
             localStorage.setItem('Token: ', token);
             localStorage.setItem('User: ', JSON.stringify(user));
-
-            if (user.role === 'ADMIN') {
-                navigate('/admin');
-            } else {
-                navigate('/');
-            }
+            navigate('/');
         } catch (error) {
             toast.error('Tài khoản hoặc mật khẩu không đúng!', {
                 position: "top-right",

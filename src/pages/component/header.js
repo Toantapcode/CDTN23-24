@@ -8,8 +8,21 @@ export default function Header() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
     const token = localStorage.getItem('Token: ');
+    const userData = localStorage.getItem('User: ');
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
+
+    let roles = [];
+    try {
+        if (userData) {
+            const parsedData = JSON.parse(userData);
+            roles = Array.isArray(parsedData.roles) ? parsedData.roles : [parsedData.roles].filter(Boolean);
+        }
+    } catch (error) {
+        console.error("Error parsing userData:", error);
+    }
+
+    const isAdmin = roles.includes('ADMIN') || roles.includes('SUADMIN');
 
     useEffect(() => {
         const handleScroll = () => {
@@ -47,6 +60,7 @@ export default function Header() {
 
     const confirmLogout = () => {
         localStorage.removeItem('Token: ');
+        localStorage.removeItem('User: ');
         setShowLogoutConfirm(false);
         setIsDropdownOpen(false);
         navigate('/login');
@@ -89,12 +103,21 @@ export default function Header() {
                                         >
                                             Thông tin tài khoản
                                         </a>
-                                        <button
+                                        {isAdmin && (
+                                            <a
+                                                href="/admin"
+                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100 hover:text-yellow-800"
+                                                onClick={() => setIsDropdownOpen(false)}
+                                            >
+                                                Trang quản lý
+                                            </a>
+                                        )}
+                                        <a
                                             onClick={handleLogout}
                                             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100 hover:text-yellow-800"
                                         >
                                             Đăng xuất
-                                        </button>
+                                        </a>
                                     </div>
                                 )}
                             </div>
@@ -125,7 +148,7 @@ export default function Header() {
                         <div className="flex justify-end space-x-4">
                             <button
                                 onClick={cancelLogout}
-                                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+                                className="px-4 py-2 bg-gray-200 text-gray-800 dwarf rounded hover:bg-gray-300"
                             >
                                 Hủy
                             </button>

@@ -153,11 +153,6 @@ const Rate = () => {
                             <Select.Option key={room.id} value={room.id}>{room.name}</Select.Option>
                         ))}
                     </Select>
-                    <Input.Search 
-                        placeholder="Tìm kiếm theo tên người dùng hoặc nội dung" 
-                        onSearch={handleSearch} 
-                        style={{ width: 300 }} 
-                    />
                 </div>
             </div>
             <Table

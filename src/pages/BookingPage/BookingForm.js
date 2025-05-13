@@ -23,6 +23,8 @@ const BookingForm = ({
     handleSubmit,
     today,
     pickupDetails,
+    selectedVoucher,
+    setShowVoucherModal,
 }) => {
     const handleServiceChange = (serviceId, serviceName) => {
         if (serviceName === "Đưa đón") {
@@ -127,6 +129,20 @@ const BookingForm = ({
                         )}
                     </div>
                 </div>
+                {!isPaymentSuccessful && (
+                    <div className="mb-4">
+                        <label className="block text-gray-700 font-bold mb-2" htmlFor="voucher">
+                            Mã giảm giá
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => setShowVoucherModal(true)}
+                            className="w-full px-3 py-2 border rounded-lg text-left bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-600"
+                        >
+                            {selectedVoucher ? `${selectedVoucher.code} (-${selectedVoucher.percent}%)` : "Chọn mã giảm giá"}
+                        </button>
+                    </div>
+                )}
                 {!isPaymentSuccessful && (
                     <div className="mb-4">
                         <label className="block text-gray-700 font-bold mb-2" htmlFor="paymentMethod">

@@ -20,6 +20,10 @@ function App() {
     }
   };
 
+  const getToken = () => {
+    return localStorage.getItem('Token: ');
+  };
+
   useEffect(() => {
     new WOW().init();
     const currentUser = getCurrentUser();
@@ -74,13 +78,9 @@ function App() {
           <Route
             path="/"
             element={
-              user && user.roles && user.roles.includes('ADMIN') ? (
-                <Navigate to="/admin" replace />
-              ) : (
                 <div className="wow animate__animated animate__fadeIn">
                   <HomePage />
                 </div>
-              )
             }
           />
 
@@ -92,9 +92,15 @@ function App() {
                 key={index}
                 path={route.path}
                 element={
-                  <div className="wow animate__animated animate__fadeIn">
-                    <Page />
-                  </div>
+                  route.path === '/login' && getToken() ? (
+                    <Navigate to="/" replace />
+                  ) : route.path === '/userprofile' && !getToken() ? (
+                    <Navigate to="/" replace />
+                  ) : (
+                    <div className="wow animate__animated animate__fadeIn">
+                      <Page />
+                    </div>
+                  )
                 }
               />
             );
@@ -107,7 +113,7 @@ function App() {
                 key={index}
                 path={route.path}
                 element={
-                  <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <ProtectedRoute allowedRoles={['ADMIN','SUADMIN']}>
                     <div className="wow animate__animated animate__fadeIn">
                       <Page />
                     </div>

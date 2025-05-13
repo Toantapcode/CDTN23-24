@@ -21,6 +21,53 @@ L.Icon.Default.mergeOptions({
     shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
+const VoucherModal = ({
+    showVoucherModal,
+    setShowVoucherModal,
+    vouchers,
+    setSelectedVoucher,
+}) => {
+    const handleVoucherSelect = (voucher) => {
+        setSelectedVoucher(voucher);
+        setShowVoucherModal(false);
+        toast.success(`Đã chọn mã giảm giá: ${voucher.code}`);
+    };
+
+    return (
+        showVoucherModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                    <h3 className="text-xl font-bold text-gray-800 mb-4">Chọn mã giảm giá</h3>
+                    <div className="max-h-60 overflow-y-auto">
+                        {vouchers && vouchers.length > 0 ? (
+                            vouchers.map((voucher) => (
+                                <button
+                                    key={voucher.id}
+                                    type="button"
+                                    onClick={() => handleVoucherSelect(voucher)}
+                                    className="w-full p-2 mb-2 text-left rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+                                >
+                                    <p className="font-bold">{voucher.code}</p>
+                                    <p className="text-sm text-gray-600">Giảm {voucher.percent}%</p>
+                                </button>
+                            ))
+                        ) : (
+                            <p className="text-gray-500">Không có mã giảm giá nào.</p>
+                        )}
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => setShowVoucherModal(false)}
+                        className="mt-4 w-full bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+                    >
+                        Đóng
+                    </button>
+                </div>
+            </div>
+        )
+    );
+};
+
 const BookingPage = () => {
     const { state } = useLocation();
     const [searchParams] = useSearchParams();
@@ -57,6 +104,9 @@ const BookingPage = () => {
     });
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [locationSearch, setLocationSearch] = useState("");
+    const [vouchers, setVouchers] = useState([]);
+    const [selectedVoucher, setSelectedVoucher] = useState(savedFormData.selectedVoucher || null);
+    const [showVoucherModal, setShowVoucherModal] = useState(false);
     const mapRef = useRef(null);
     const markerRef = useRef(null);
     const leafletMapRef = useRef(null);
@@ -67,7 +117,6 @@ const BookingPage = () => {
     const userData = storedUser ? JSON.parse(storedUser) : null;
     const userId = userData?.id || null;
 
-    // Nominatim search
     const handleLocationSearch = async () => {
         if (!locationSearch) {
             toast.error("Vui lòng nhập địa điểm để tìm kiếm.");
@@ -123,7 +172,6 @@ const BookingPage = () => {
         }
     };
 
-    // Calculate distance and price when pickup details change
     useEffect(() => {
         const calculateDistanceAndPrice = async () => {
             if (pickupDetails.lat && pickupDetails.lng) {
@@ -173,7 +221,6 @@ const BookingPage = () => {
         calculateDistanceAndPrice();
     }, [pickupDetails.lat, pickupDetails.lng]);
 
-    // Check payment status
     useEffect(() => {
         if (searchParams.get('status') === '00') {
             setIsPaymentSuccessful(true);
@@ -186,7 +233,6 @@ const BookingPage = () => {
         }
     }, [searchParams]);
 
-    // Fetch services
     useEffect(() => {
         const fetchServices = async () => {
             try {
@@ -201,7 +247,21 @@ const BookingPage = () => {
         fetchServices();
     }, []);
 
-    // Save form data to localStorage
+    useEffect(() => {
+        const fetchVouchers = async () => {
+            try {
+                const response = await axiosInstance.get('/voucher/random3');
+                console.log(response)
+                setVouchers(response.voucherList || []);
+            } catch (error) {
+                console.error("Lỗi khi lấy danh sách mã giảm giá:", error);
+                toast.error("Không thể tải danh sách mã giảm giá.");
+                setVouchers([]);
+            }
+        };
+        fetchVouchers();
+    }, []);
+
     useEffect(() => {
         const formData = {
             checkInDate,
@@ -211,9 +271,10 @@ const BookingPage = () => {
             paymentMethod,
             selectedServices,
             pickupDetails,
+            selectedVoucher,
         };
         localStorage.setItem('BookingFormData', JSON.stringify(formData));
-    }, [checkInDate, checkOutDate, numOfAdults, numOfChild, paymentMethod, selectedServices, pickupDetails]);
+    }, [checkInDate, checkOutDate, numOfAdults, numOfChild, paymentMethod, selectedServices, pickupDetails, selectedVoucher]);
 
     const calculateDays = () => {
         if (checkInDate && checkOutDate) {
@@ -235,15 +296,29 @@ const BookingPage = () => {
         }, 0);
     };
 
+    const calculateDiscount = () => {
+        if (selectedVoucher && selectedVoucher.percent) {
+            const basePrice = room.price && calculateDays() > 0
+                ? (room.price * 1000 * calculateDays()) + calculateServiceTotal()
+                : calculateServiceTotal();
+            console.log('base: ', basePrice)
+            return (selectedVoucher.percent * basePrice) / 100;
+        }
+        return 0;
+    };
+
     const totalPrice = room.price && calculateDays() > 0
-        ? (room.price * 1000 * calculateDays()) + calculateServiceTotal()
-        : calculateServiceTotal();
+        ? (room.price * 1000 * calculateDays()) + calculateServiceTotal() - calculateDiscount()
+        : calculateServiceTotal() - calculateDiscount();
 
     const displayPrice = totalPrice > 0 && !isNaN(totalPrice)
-        ? `${totalPrice.toLocaleString('vi-VN')} VND (${calculateDays()} đêm${selectedServices.length > 0 ? ' + dịch vụ' : ''})`
+        ? `${totalPrice.toLocaleString('vi-VN')} VND (${calculateDays()} đêm${selectedServices.length > 0 ? ' + dịch vụ' : ''}${selectedVoucher ? ' + mã giảm giá' : ''})`
         : room.price !== null && room.price !== undefined
             ? `${(room.price * 1000).toLocaleString('vi-VN')} VND / đêm`
             : "Giá không xác định";
+    console.log('room: ', room.price)
+    console.log('totall: ', totalPrice)
+    console.log('display: ', displayPrice)
 
     const validateForm = () => {
         const checkIn = new Date(checkInDate);
@@ -372,7 +447,8 @@ const BookingPage = () => {
                     pickupLng: pickupDetails.lng,
                     pickupTime: `${checkInDate}T${pickupDetails.time}:00`
                 }
-            ] : []
+            ] : [],
+            voucherId: selectedVoucher ? selectedVoucher.id : null,
         };
 
         try {
@@ -444,6 +520,11 @@ const BookingPage = () => {
                             handleSubmit={handleSubmit}
                             today={today}
                             pickupDetails={pickupDetails}
+                            vouchers={vouchers}
+                            selectedVoucher={selectedVoucher}
+                            setSelectedVoucher={setSelectedVoucher}
+                            showVoucherModal={showVoucherModal}
+                            setShowVoucherModal={setShowVoucherModal}
                         />
                     </div>
                 </div>
@@ -471,6 +552,12 @@ const BookingPage = () => {
                 markerRef={markerRef}
                 leafletMapRef={leafletMapRef}
                 reverseGeocode={reverseGeocode}
+            />
+            <VoucherModal
+                showVoucherModal={showVoucherModal}
+                setShowVoucherModal={setShowVoucherModal}
+                vouchers={vouchers}
+                setSelectedVoucher={setSelectedVoucher}
             />
             <ToastContainer />
             <Footer />
