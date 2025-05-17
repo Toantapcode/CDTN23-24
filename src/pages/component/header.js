@@ -90,6 +90,7 @@ export default function Header() {
                         <a href="/" className="text-yellow-800 hover:text-yellow-600">Trang chủ</a>
                         <a href="introduce" className="text-yellow-800 hover:text-yellow-600">Giới thiệu</a>
                         <a href="rooms" className="text-yellow-800 hover:text-yellow-600">Phòng</a>
+                        <a href="/userprofile?tab=booking-history" className="text-yellow-800 hover:text-yellow-600">Đặt phòng của tôi</a>
                         <a href="contact" className="text-yellow-800 hover:text-yellow-600">Liên hệ</a>
                         {token ? (
                             <div className="relative" ref={dropdownRef}>

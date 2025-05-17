@@ -13,7 +13,7 @@ const RoomCard = ({ room, onBook }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
       <img
- Warren        src={room.image}
+        src={room.image}
         alt={room.name}
         className="rounded-lg mb-4 w-full h-48 object-cover"
       />
@@ -54,6 +54,18 @@ const RoomsPage = () => {
     const d = new Date(date);
     return d.toISOString().split("T")[0]; 
   };
+
+  useEffect(() => {
+    if (checkInDate || checkOutDate) {
+      const savedFormData = JSON.parse(localStorage.getItem('BookingFormData')) || {};
+      const updatedFormData = {
+        ...savedFormData,
+        checkInDate,
+        checkOutDate,
+      };
+      localStorage.setItem('BookingFormData', JSON.stringify(updatedFormData));
+    }
+  }, [checkInDate, checkOutDate]);
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -167,7 +179,8 @@ const RoomsPage = () => {
               </select>
             </div>
             <div>
-              <label className="text-gray-700 font-bold mr-2">Giá tối thiểu (nghìn VND):</label>
+              <label className="notifications
+                text-gray-700 font-bold mr-2">Giá tối thiểu (nghìn VND):</label>
               <input
                 type="number"
                 value={minPrice}

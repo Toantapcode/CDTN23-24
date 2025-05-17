@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import Header from "../component/header";
 import Footer from "../component/footer";
 import imgbg from "../../assets/image/hero3.webp";
@@ -80,6 +80,7 @@ const BookingPage = () => {
             type: "",
         };
     });
+    const navigate = useNavigate();
 
     const savedFormData = JSON.parse(localStorage.getItem('BookingFormData')) || {};
     const [checkInDate, setCheckInDate] = useState(savedFormData.checkInDate || "");
@@ -185,12 +186,24 @@ const BookingPage = () => {
                         const distanceKm = distanceMeters / 1000; // Convert to kilometers
                         let price = 0;
 
-                        if (distanceKm <= 50) {
-                            price = distanceKm * 10000;
-                        } else if (distanceKm <= 100) {
-                            price = (50 * 10000) + ((distanceKm - 50) * 8000);
+                        const totalPeople = numOfAdults + numOfChild;
+
+                        if (totalPeople <= 4) {
+                            if (distanceKm <= 50) {
+                                price = distanceKm * 10000;
+                            } else if (distanceKm <= 100) {
+                                price = (50 * 10000) + ((distanceKm - 50) * 8000);
+                            } else {
+                                price = (50 * 10000) + (50 * 8000) + ((distanceKm - 100) * 6000);
+                            }
                         } else {
-                            price = (50 * 10000) + (50 * 8000) + ((distanceKm - 100) * 6000);
+                            if (distanceKm <= 50) {
+                                price = distanceKm * 12000;
+                            } else if (distanceKm <= 100) {
+                                price = (50 * 10000) + ((distanceKm - 50) * 1000);
+                            } else {
+                                price = (50 * 10000) + (50 * 8000) + ((distanceKm - 100) * 8000);
+                            }
                         }
 
                         setPickupDetails(prev => ({
@@ -219,7 +232,7 @@ const BookingPage = () => {
         };
 
         calculateDistanceAndPrice();
-    }, [pickupDetails.lat, pickupDetails.lng]);
+    }, [pickupDetails.lat, pickupDetails.lng, numOfAdults, numOfChild]);
 
     useEffect(() => {
         if (searchParams.get('status') === '00') {
@@ -457,9 +470,8 @@ const BookingPage = () => {
                 `/booking/bookRoom/${selectedRoomId}/${userId}`,
                 bookingData
             );
-            toast.success('Đặt phòng thành công!', {
-                position: 'top-right',
-                autoClose: 3000,
+            navigate('/', {
+                state: { successMessage: 'Đặt phòng thành công!' }
             });
 
             localStorage.removeItem('SelectedRoomId');

@@ -1,25 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu } from 'antd';
 import {
     UserOutlined,
     HistoryOutlined,
     LockOutlined,
-    QuestionCircleOutlined,
-    FileTextOutlined,
-    StarOutlined,
     LogoutOutlined,
 } from '@ant-design/icons';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from '../../request';
 
 const Sidebar = ({ onMenuClick }) => {
-    const [selectedKey, setSelectedKey] = useState('profile');
-    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const tabParam = queryParams.get('tab') || 'profile';
+
+    const [selectedKey, setSelectedKey] = useState(tabParam);
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
+    // Cập nhật selectedKey khi URL thay đổi
+    useEffect(() => {
+        const tab = queryParams.get('tab');
+        if (tab) {
+            setSelectedKey(tab);
+        }
+    }, [location.search]);
 
     const handleClick = ({ key }) => {
         setSelectedKey(key);
         if (key !== 'logout') {
+            // Thay đổi tab trên URL (nếu bạn muốn)
+            navigate(`/userprofile?tab=${key}`);
             onMenuClick(key);
         }
     };
@@ -65,20 +76,8 @@ const Sidebar = ({ onMenuClick }) => {
                     </Menu.ItemGroup>
 
                     <Menu.ItemGroup title="Khác" className="font-bold mt-4">
-                        {/* <Menu.Item key="support" icon={<QuestionCircleOutlined />}>
-                            Hỗ trợ
-                        </Menu.Item>
-                        <Menu.Item key="privacy-policy" icon={<QuestionCircleOutlined />}>
-                            Chính sách bảo mật
-                        </Menu.Item>
-                        <Menu.Item key="terms" icon={<FileTextOutlined />}>
-                            Điều khoản sử dụng
-                        </Menu.Item>
-                        <Menu.Item key="review" icon={<StarOutlined />}>
-                            Đánh giá ứng dụng
-                        </Menu.Item> */}
-                        <Menu.Item 
-                            key="logout" 
+                        <Menu.Item
+                            key="logout"
                             icon={<LogoutOutlined />}
                             onClick={handleLogoutClick}
                         >

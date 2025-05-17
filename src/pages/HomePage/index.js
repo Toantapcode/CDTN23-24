@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import heroImage1 from '../../assets/image/slide1.jpg';
 import heroImage2 from '../../assets/image/hero2.jpg';
@@ -13,6 +15,17 @@ const HomePage = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const navigate = useNavigate();
   const token = localStorage.getItem('Token: ');
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.successMessage) {
+      toast.success(location.state.successMessage, {
+        position: 'bottom-right',
+        autoClose: 3000,
+      });
+    }
+  }, [location.state]);
 
   const handleClick = () => {
     if (token) {
@@ -33,9 +46,10 @@ const HomePage = () => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
     }, 3000);
     return () => clearInterval(interval);
-  },[])
+  }, [])
   return (
     <div className="bg-gray-100 min-h-screen">
+      <ToastContainer />
       <Header />
       <section className="relative bg-cover bg-center h-[96vh] flex items-center justify-center mt-[-50px] mb-[100px]"
         style={{ backgroundImage: `url(${heroImages[currentImageIndex]})` }}>
