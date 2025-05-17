@@ -12,16 +12,16 @@ const TermsPopup = ({ isOpen, onClose }) => {
           <section>
             <h3 className="text-lg font-semibold">1. Chấp nhận Điều khoản</h3>
             <p>
-              Bằng việc sử dụng dịch vụ của LuxeStay, quý khách đồng ý tuân thủ các điều khoản và điều kiện được nêu trong tài liệu này. Nếu quý khách không đồng ý, vui lòng không sử dụng dịch vụ của chúng tôi.
+              Bằng việc sử dụng dịch vụ của Hồng Hà, quý khách đồng ý tuân thủ các điều khoản và điều kiện được nêu trong tài liệu này. Nếu quý khách không đồng ý, vui lòng không sử dụng dịch vụ của chúng tôi.
             </p>
           </section>
 
           <section>
             <h3 className="text-lg font-semibold">2. Đặt phòng và Thanh toán</h3>
             <p>
-              - Mọi đặt phòng phải được thực hiện qua hệ thống trực tuyến của LuxeStay.<br/>
+              - Mọi đặt phòng phải được thực hiện qua hệ thống trực tuyến của Hồng Hà.<br/>
               - Thanh toán phải được hoàn tất tại thời điểm đặt phòng hoặc theo chính sách cụ thể của từng loại phòng.<br/>
-              - LuxeStay có quyền từ chối hoặc hủy đặt phòng nếu phát hiện gian lận hoặc vi phạm.
+              - Hồng Hà có quyền từ chối hoặc hủy đặt phòng nếu phát hiện gian lận hoặc vi phạm.
             </p>
           </section>
 
@@ -46,7 +46,7 @@ const TermsPopup = ({ isOpen, onClose }) => {
           <section>
             <h3 className="text-lg font-semibold">5. Bảo mật Thông tin</h3>
             <p>
-              - LuxeStay cam kết bảo vệ thông tin cá nhân của khách hàng theo quy định pháp luật.<br/>
+              - Hồng Hà cam kết bảo vệ thông tin cá nhân của khách hàng theo quy định pháp luật.<br/>
               - Thông tin cá nhân chỉ được sử dụng để xử lý đặt phòng và cung cấp dịch vụ liên quan.
             </p>
           </section>
@@ -54,7 +54,7 @@ const TermsPopup = ({ isOpen, onClose }) => {
           <section>
             <h3 className="text-lg font-semibold">6. Trách nhiệm Pháp lý</h3>
             <p>
-              LuxeStay không chịu trách nhiệm cho các thiệt hại gián tiếp hoặc ngẫu nhiên phát sinh từ việc sử dụng dịch vụ, trừ khi có quy định khác từ pháp luật.
+              Hồng Hà không chịu trách nhiệm cho các thiệt hại gián tiếp hoặc ngẫu nhiên phát sinh từ việc sử dụng dịch vụ, trừ khi có quy định khác từ pháp luật.
             </p>
           </section>
         </div>

@@ -7,7 +7,7 @@ export default function About() {
                 <div className="gap-element" style={{ display: 'block', height: 'auto', paddingTop: '60px' }}></div>
                 <div className="flex flex-col items-center text-center mb-12">
                     <h1 className="text-5xl font-bold text-gray-900 flex items-center">
-                        <span className="border-r-8 border-yellow-600 pr-4 mr-4 font-pacifico">Luxe Stay</span>
+                        <span className="border-r-8 border-yellow-600 pr-4 mr-4 font-pacifico">Hồng Hà</span>
                         <span className="text-yellow-600">Chào mừng đến với chúng tôi</span>
                     </h1>
                 </div>

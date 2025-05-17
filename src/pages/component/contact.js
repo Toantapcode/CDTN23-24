@@ -29,7 +29,7 @@ const ContactPage = () => {
                                 allowFullScreen=""
                                 loading="lazy"
                                 referrerPolicy="no-referrer-when-downgrade"
-                                title="LuxeStay Location"
+                                title="Hồng Hà Location"
                             ></iframe>
                         </div>
 

@@ -65,7 +65,7 @@ const Sidebar = ({ onMenuClick }) => {
                     </Menu.ItemGroup>
 
                     <Menu.ItemGroup title="Khác" className="font-bold mt-4">
-                        <Menu.Item key="support" icon={<QuestionCircleOutlined />}>
+                        {/* <Menu.Item key="support" icon={<QuestionCircleOutlined />}>
                             Hỗ trợ
                         </Menu.Item>
                         <Menu.Item key="privacy-policy" icon={<QuestionCircleOutlined />}>
@@ -76,7 +76,7 @@ const Sidebar = ({ onMenuClick }) => {
                         </Menu.Item>
                         <Menu.Item key="review" icon={<StarOutlined />}>
                             Đánh giá ứng dụng
-                        </Menu.Item>
+                        </Menu.Item> */}
                         <Menu.Item 
                             key="logout" 
                             icon={<LogoutOutlined />}

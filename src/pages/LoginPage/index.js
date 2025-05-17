@@ -119,7 +119,7 @@ function LoginPage() {
             <div className="w-full max-w-4xl bg-black/20 backdrop-blur-sm rounded-2xl overflow-hidden shadow-2xl flex">
                 <div className="flex-1 p-8 text-white flex flex-col items-center justify-center text-center">
                     <a href='/'>
-                        <h1 className="text-6xl font-bold mb-4">LuxeStay</h1>
+                        <h1 className="text-6xl font-bold mb-4">Hồng Hà</h1>
                         <h2 className="text-3xl mb-4">Chào mừng quý khách</h2>
                     </a>
                     <div className="flex gap-4">

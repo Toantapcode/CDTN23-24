@@ -81,7 +81,7 @@ export default function Header() {
                         <div className={`relative transform rotate-45 p-2 border-2 border-yellow-600 transition-all duration-300 ${isScrolled ? "scale-75" : "scale-100"}`}>
                             <img
                                 src={logo}
-                                alt="LuxeStay Logo"
+                                alt="Hồng Hà Logo"
                                 className={`transform rotate-[-45deg] border-2 border-yellow-600 transition-all duration-300 ${isScrolled ? "w-[70px]" : "w-[90px]"}`}
                             />
                         </div>

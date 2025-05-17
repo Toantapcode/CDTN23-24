@@ -41,7 +41,7 @@ const HomePage = () => {
         style={{ backgroundImage: `url(${heroImages[currentImageIndex]})` }}>
         <div className="absolute inset-0 bg-black/50"></div>
         <div className="relative container mx-auto px-6 py-16 text-center">
-          <h1 className="text-7xl font-bold text-white mb-4 drop-shadow-lg">Chào mừng đến với LuxeStay</h1>
+          <h1 className="text-7xl font-bold text-white mb-4 drop-shadow-lg">Chào mừng đến với Hồng Hà</h1>
           <p className="text-2xl text-white drop-shadow-md mb-10">Trải nghiệm sự đón tiếp tuyệt vời nhất của Hạ Long</p>
           <button className="mt-10 bg-white text-gray-800 font-semibold py-3 px-8 rounded-full hover:bg-gray-100 
                            transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
@@ -59,7 +59,7 @@ const HomePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white p-6 rounded-lg shadow-lg">
               <p className="text-gray-600 mb-4">
-                "LuxeStay là khách sạn tuyệt vời nhất mà tôi từng ở. Dịch vụ hoàn hảo và tầm nhìn tuyệt đẹp!"
+                "Hồng Hà là khách sạn tuyệt vời nhất mà tôi từng ở. Dịch vụ hoàn hảo và tầm nhìn tuyệt đẹp!"
               </p>
               <p className="text-gray-800 font-semibold">- Nguyễn Thành Đạt</p>
             </div>

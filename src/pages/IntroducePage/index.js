@@ -69,7 +69,7 @@ const IntroducePage = () => {
                         <div className="w-full md:w-1/2 lg:w-2/3 px-4 mb-8">
                             <div className="flex flex-col justify-center h-full">
                                 <h1 className="text-5xl font-bold text-gray-900 flex items-center mb-4">
-                                    <span className="border-r-8 border-yellow-600 pr-4 mr-4 font-pacifico">Luxe Stay</span>
+                                    <span className="border-r-8 border-yellow-600 pr-4 mr-4 font-pacifico"> Hồng Hà</span>
                                     <span className="text-yellow-600 text-2xl">Chào mừng đến với chúng tôi</span>
                                 </h1>
                                 <p className="text-lg text-gray-700 max-w-2xl mx-0">
