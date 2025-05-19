@@ -59,6 +59,10 @@ const Sidebar = ({ onMenuClick }) => {
             icon: <HomeOutlined />,
             children: [
                 {
+                    key: 'checkRoomToDay',
+                    label: 'Trạng thái phòng hôm nay',
+                },
+                {
                     key: 'rooms',
                     label: 'Quản lý phòng',
                 },
@@ -81,12 +85,12 @@ const Sidebar = ({ onMenuClick }) => {
         {
             key: 'voucher',
             label: 'Mã giảm giá',
-            icon: <GiftOutlined  />,
+            icon: <GiftOutlined />,
         },
         {
             key: 'rate',
             label: 'Đánh giá',
-            icon: <StarOutlined  />,
+            icon: <StarOutlined />,
         },
         {
             key: 'logout',
@@ -95,7 +99,7 @@ const Sidebar = ({ onMenuClick }) => {
         },
     ];
 
-    const filteredMenuItems = userRole === 'ADMIN' 
+    const filteredMenuItems = userRole === 'ADMIN'
         ? menuItems.filter(item => item.key !== 'user')
         : menuItems;
 

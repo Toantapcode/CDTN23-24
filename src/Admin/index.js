@@ -11,6 +11,7 @@ import RolePage from './pages/RolePage'
 import Invoice from './pages/Invoice';
 import Voucher from './pages/Voucher'
 import Rate from './pages/Rate'
+import StatusRoomToday from './pages/StatusRoomToDay';
 
 export default function Admin() {
     const [content, setContent] = useState('dashboard');
@@ -27,6 +28,8 @@ export default function Admin() {
                 return <RolePage />;
             case 'rooms':
                 return <Rooms />;
+            case 'checkRoomToDay':
+                return <StatusRoomToday />;
             case 'roomtypes':
                 return <RoomTypePage />;
             case 'service':
