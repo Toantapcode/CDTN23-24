@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../request';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import avtDefault from '../../assets/image/avatar_default.jpg'
 
-const ReviewModal = ({ showReviewModal, setShowReviewModal, reviews, roomId }) => {
+const ReviewModal = ({ showReviewModal, setShowReviewModal, reviews }) => {
     const [starFilter, setStarFilter] = useState(0); // 0 means no filter
 
     const filteredReviews = starFilter === 0
@@ -14,7 +15,7 @@ const ReviewModal = ({ showReviewModal, setShowReviewModal, reviews, roomId }) =
         showReviewModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">Tất cả đánh giá cho phòng {roomId}</h3>
+                    <h3 className="text-xl font-bold text-gray-800 mb-4">Tất cả đánh giá cho phòng này</h3>
                     <div className="mb-4">
                         <label className="mr-2 font-semibold">Lọc theo số sao:</label>
                         <select
@@ -33,6 +34,11 @@ const ReviewModal = ({ showReviewModal, setShowReviewModal, reviews, roomId }) =
                             filteredReviews.map((review) => (
                                 <div key={review.id} className="p-4 mb-2 border-b border-gray-200">
                                     <div className="flex items-center mb-2">
+                                        <img
+                                            src={review.user.avatar || avtDefault}
+                                            alt="avatar"
+                                            className="w-8 h-8 rounded-full object-cover mr-2 border"
+                                        />
                                         <p className="font-bold text-gray-800 mr-2">{review.user.name}</p>
                                         <div className="flex">
                                             {[...Array(review.rating)].map((_, i) => (
@@ -108,6 +114,11 @@ const RoomInfo = ({ room, displayPrice }) => {
                     onClick={() => setShowReviewModal(true)}
                 >
                     <div className="flex items-center mb-2">
+                        <img
+                            src={randomReview.user.avatar || avtDefault}
+                            alt="avatar"
+                            className="w-8 h-8 rounded-full object-cover mr-2 border"
+                        />
                         <p className="font-bold text-gray-800 mr-2">{randomReview.user.name}</p>
                         <div className="flex">
                             {[...Array(randomReview.rating)].map((_, i) => (

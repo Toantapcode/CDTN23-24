@@ -13,7 +13,7 @@ import BookingForm from "./BookingForm";
 import PickupModal from "./PickupModal";
 import LocationModal from "./LocationModal";
 
-// Fix Leaflet icon issue
+// Sửa biểu tượng
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -94,7 +94,9 @@ const BookingPage = () => {
     const [paymentCompleted, setPaymentCompleted] = useState(false);
     const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
     const [showPickupModal, setShowPickupModal] = useState(false);
-    const [pickupDetails, setPickupDetails] = useState(savedFormData.pickupDetails || {
+
+
+    const [pickupDetails, setPickupDetails] = useState(savedFormData.pickupDetails || { //lưu thông tin đón khách
         address: "",
         lat: null,
         lng: null,
@@ -105,12 +107,14 @@ const BookingPage = () => {
     });
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [locationSearch, setLocationSearch] = useState("");
-    const [vouchers, setVouchers] = useState([]);
-    const [selectedVoucher, setSelectedVoucher] = useState(savedFormData.selectedVoucher || null);
-    const [showVoucherModal, setShowVoucherModal] = useState(false);
     const mapRef = useRef(null);
     const markerRef = useRef(null);
     const leafletMapRef = useRef(null);
+    
+    
+    const [vouchers, setVouchers] = useState([]);
+    const [selectedVoucher, setSelectedVoucher] = useState(savedFormData.selectedVoucher || null);
+    const [showVoucherModal, setShowVoucherModal] = useState(false);
 
     const today = new Date().toISOString().split("T")[0];
     const selectedRoomId = localStorage.getItem('SelectedRoomId');
@@ -118,6 +122,7 @@ const BookingPage = () => {
     const userData = storedUser ? JSON.parse(storedUser) : null;
     const userId = userData?.id || null;
 
+    //tìm địa điểm
     const handleLocationSearch = async () => {
         if (!locationSearch) {
             toast.error("Vui lòng nhập địa điểm để tìm kiếm.");
@@ -174,6 +179,7 @@ const BookingPage = () => {
     };
 
     useEffect(() => {
+        //dựa vào api yêu cầu lng và lat để tính khoảng cách
         const calculateDistanceAndPrice = async () => {
             if (pickupDetails.lat && pickupDetails.lng) {
                 try {
@@ -183,7 +189,7 @@ const BookingPage = () => {
                     const data = await response.json();
                     if (data.routes && data.routes.length > 0) {
                         const distanceMeters = data.routes[0].distance;
-                        const distanceKm = distanceMeters / 1000; // Convert to kilometers
+                        const distanceKm = distanceMeters / 1000;
                         let price = 0;
 
                         const totalPeople = numOfAdults + numOfChild;
@@ -200,9 +206,9 @@ const BookingPage = () => {
                             if (distanceKm <= 50) {
                                 price = distanceKm * 12000;
                             } else if (distanceKm <= 100) {
-                                price = (50 * 10000) + ((distanceKm - 50) * 1000);
+                                price = (50 * 10000) + ((distanceKm - 50) * 9600);
                             } else {
-                                price = (50 * 10000) + (50 * 8000) + ((distanceKm - 100) * 8000);
+                                price = (50 * 10000) + (50 * 8000) + ((distanceKm - 100) * 7200);
                             }
                         }
 
@@ -264,11 +270,9 @@ const BookingPage = () => {
         const fetchVouchers = async () => {
             try {
                 const response = await axiosInstance.get('/voucher/random3');
-                console.log(response)
                 setVouchers(response.voucherList || []);
             } catch (error) {
                 console.error("Lỗi khi lấy danh sách mã giảm giá:", error);
-                // toast.error("Không thể tải danh sách mã giảm giá.");
                 setVouchers([]);
             }
         };
@@ -305,33 +309,29 @@ const BookingPage = () => {
             if (service?.name === "Đưa đón" && pickupDetails.price) {
                 return total + pickupDetails.price;
             }
+            if (service?.id === 1) {
+                const quantity = numOfAdults + 0.5 * numOfChild;
+                return total + (service.price * quantity * 1000 || 0);
+            }
             return total + (service?.price * 1000 || 0);
         }, 0);
     };
 
-    const calculateDiscount = () => {
-        if (selectedVoucher && selectedVoucher.percent) {
-            const basePrice = room.price && calculateDays() > 0
-                ? (room.price * 1000 * calculateDays()) + calculateServiceTotal()
-                : calculateServiceTotal();
-            console.log('base: ', basePrice)
-            return (selectedVoucher.percent * basePrice) / 100;
-        }
-        return 0;
-    };
-
-    const totalPrice = room.price && calculateDays() > 0
-        ? (room.price * 1000 * calculateDays()) + calculateServiceTotal() - calculateDiscount()
-        : calculateServiceTotal() - calculateDiscount();
+    const totalPrice = (() => {
+        const roomPrice = room.price && calculateDays() > 0 ? room.price * 1000 * calculateDays() : 0;
+        const basePrice = roomPrice + calculateServiceTotal();
+        console.log(basePrice)
+        const discount = selectedVoucher && selectedVoucher.percent ? (basePrice * selectedVoucher.percent) / 100 : 0;
+        const discountedPrice = basePrice - discount;
+        return discountedPrice + (discountedPrice * 0.15);
+    })();
+    console.log(totalPrice)
 
     const displayPrice = totalPrice > 0 && !isNaN(totalPrice)
-        ? `${totalPrice.toLocaleString('vi-VN')} VND (${calculateDays()} đêm${selectedServices.length > 0 ? ' + dịch vụ' : ''}${selectedVoucher ? ' + mã giảm giá' : ''})`
+        ? `Tổng tiền: ${totalPrice.toLocaleString('vi-VN')} VND`
         : room.price !== null && room.price !== undefined
             ? `${(room.price * 1000).toLocaleString('vi-VN')} VND / đêm`
             : "Giá không xác định";
-    console.log('room: ', room.price)
-    console.log('totall: ', totalPrice)
-    console.log('display: ', displayPrice)
 
     const validateForm = () => {
         const checkIn = new Date(checkInDate);
@@ -376,6 +376,8 @@ const BookingPage = () => {
         setShowPickupModal(false);
     };
 
+
+    //lấy vị trí hiện tại API geolocation
     const getCurrentLocation = () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -386,7 +388,7 @@ const BookingPage = () => {
                         lat: latitude,
                         lng: longitude,
                     }));
-                    reverseGeocode(latitude, longitude);
+                    reverseGeocode(latitude, longitude); //chuyển tọa độ thành địa chỉ
                     if (leafletMapRef.current && markerRef.current) {
                         leafletMapRef.current.setView([latitude, longitude], 12);
                         markerRef.current.setLatLng([latitude, longitude]);
@@ -452,24 +454,28 @@ const BookingPage = () => {
             checkOutDate: checkOutDate,
             numOfAdults: numOfAdults,
             numOfChild: numOfChild,
-            services: pickupService ? [
-                {
-                    id: pickupService.id,
-                    pickupAddress: pickupDetails.address,
-                    pickupLat: pickupDetails.lat,
-                    pickupLng: pickupDetails.lng,
-                    pickupTime: `${checkInDate}T${pickupDetails.time}:00`
+            services: selectedServices.map(serviceId => {
+                const service = services.find(s => s.id === serviceId);
+                if (service?.name === "Đưa đón") {
+                    return {
+                        id: serviceId,
+                        pickupAddress: pickupDetails.address,
+                        pickupLat: pickupDetails.lat,
+                        pickupLng: pickupDetails.lng,
+                        pickupTime: `${checkInDate}T${pickupDetails.time}:00`
+                    };
                 }
-            ] : [],
+                return { id: serviceId };
+            }),
             voucherId: selectedVoucher ? selectedVoucher.id : null,
         };
 
         try {
-            console.log("bookingData: ", bookingData, selectedRoomId, userId);
             const response = await axiosInstance.post(
                 `/booking/bookRoom/${selectedRoomId}/${userId}`,
                 bookingData
             );
+            console.log(bookingData)
             navigate('/', {
                 state: { successMessage: 'Đặt phòng thành công!' }
             });
