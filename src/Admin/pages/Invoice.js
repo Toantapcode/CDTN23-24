@@ -121,7 +121,7 @@ const Invoice = () => {
         if (!selectedBooking) throw new Error('Booking not found');
 
         const detailResponse = await axiosInstance.get(`/booking/getByCode/${selectedBooking.bookingCode}`);
-        const totalAmount = detailResponse.booking.totalAmount || 0;
+        const totalAmount = detailResponse.booking.totalAmount * 1000 || 0;
 
         const invoiceId = Math.floor(10000000 + Math.random() * 90000000).toString();
         const transactionNo = Math.floor(100000 + Math.random() * 900000).toString();

@@ -23,7 +23,7 @@ const BookingHistory = () => {
             const fetchBookings = async () => {
                 try {
                     const response = await axiosInstance.get(`/user/getUserBooking/${userId}`);
-                    setBookings(response.user.bookings);
+                    setBookings(response?.user?.bookings || [] );
                 } catch (error) {
                     console.error('Lỗi khi lấy lịch sử đặt phòng:', error);
                     setBookings([]);
@@ -145,7 +145,7 @@ const BookingHistory = () => {
         );
     }
 
-    if (bookings.length === 0) {
+    if (!bookings || bookings.length === 0) {
         return (
             <div className="max-w-7xl mx-auto p-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Lịch sử đặt phòng</h2>

@@ -268,7 +268,7 @@ const BookingPage = () => {
                 setVouchers(response.voucherList || []);
             } catch (error) {
                 console.error("Lỗi khi lấy danh sách mã giảm giá:", error);
-                toast.error("Không thể tải danh sách mã giảm giá.");
+                // toast.error("Không thể tải danh sách mã giảm giá.");
                 setVouchers([]);
             }
         };

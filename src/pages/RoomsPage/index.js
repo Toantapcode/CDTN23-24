@@ -35,6 +35,7 @@ const token = localStorage.getItem("Token: ");
 const RoomsPage = () => {
   const [rooms, setRooms] = useState([]);
   const [filteredRooms, setFilteredRooms] = useState([]);
+  const [randomRooms, setRandomRooms] = useState([]); // New state for random rooms
   const [loading, setLoading] = useState(false);
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
@@ -52,7 +53,7 @@ const RoomsPage = () => {
   const formatDate = (date) => {
     if (!date) return "";
     const d = new Date(date);
-    return d.toISOString().split("T")[0]; 
+    return d.toISOString().split("T")[0];
   };
 
   useEffect(() => {
@@ -98,6 +99,27 @@ const RoomsPage = () => {
     localStorage.removeItem("SelectedRoom");
     fetchRooms();
   }, [checkInDate, checkOutDate, roomTypeId]);
+
+  // New useEffect to fetch random rooms
+  useEffect(() => {
+    const fetchRandomRooms = async () => {
+      try {
+        const response = await axiosInstance.get("/room/checkToDay?after12=true");
+        if (response && response.roomList) {
+          // Shuffle and select up to 6 rooms
+          const shuffledRooms = response.roomList.sort(() => Math.random() - 0.5).slice(0, 6);
+          setRandomRooms(shuffledRooms);
+        } else {
+          setRandomRooms([]);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu phòng ngẫu nhiên:", error);
+        setRandomRooms([]);
+      }
+    };
+
+    fetchRandomRooms();
+  }, []);
 
   useEffect(() => {
     let filtered = rooms;
@@ -179,8 +201,7 @@ const RoomsPage = () => {
               </select>
             </div>
             <div>
-              <label className="notifications
-                text-gray-700 font-bold mr-2">Giá tối thiểu (nghìn VND):</label>
+              <label className="text-gray-700 font-bold mr-2">Giá tối thiểu (nghìn VND):</label>
               <input
                 type="number"
                 value={minPrice}
@@ -218,6 +239,22 @@ const RoomsPage = () => {
               )}
             </div>
           )}
+
+          {/* New section for random rooms */}
+          <div className="mt-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Gợi ý phòng cho bạn</h2>
+            {randomRooms.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {randomRooms.map((room, index) => (
+                  <RoomCard key={index} room={room} onBook={handleBook} />
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-gray-600">
+                Không có phòng gợi ý nào hiện tại.
+              </p>
+            )}
+          </div>
         </div>
       </div>
       <Footer />

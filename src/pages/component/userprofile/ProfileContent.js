@@ -110,13 +110,13 @@ const ProfileContent = () => {
                 </div>
                 <Form layout="vertical" className="w-full flex flex-col items-center">
                     <Form.Item label="Họ và tên" className="font-bold">
-                        <Input className="max-w-[300px]" value={userData?.name} readOnly />
+                        <Input className="max-w-[600px] w-[400px]" value={userData?.name} readOnly />
                     </Form.Item>
                     <Form.Item label="Email" className="font-bold">
-                        <Input className="max-w-[300px]" value={userData?.email} readOnly />
+                        <Input className="max-w-[600px] w-[400px]" value={userData?.email} readOnly />
                     </Form.Item>
                     <Form.Item label="Số điện thoại" className="font-bold">
-                        <Input className="max-w-[300px]" value={userData?.phone} readOnly />
+                        <Input className="max-w-[600px] w-[400px]" value={userData?.phone} readOnly />
                     </Form.Item>
                     <Form.Item>
                         <Button type="primary" onClick={showModal} className="mt-4">

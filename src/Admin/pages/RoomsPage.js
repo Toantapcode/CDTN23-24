@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Space, Tag, Pagination, Select, Input, Modal, Form, Upload, message, Popconfirm } from "antd";
+import { Table, Button, Space, Tag, Pagination, Select, Input, Modal, Form, Upload, message, Popconfirm, Spin } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import axiosInstance from '../../request';
 import { toast, ToastContainer } from 'react-toastify';
@@ -9,6 +9,7 @@ const RoomsPage = () => {
     const [roomTypes, setRoomTypes] = useState([]);
     const [filteredRooms, setFilteredRooms] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [imageLoading, setImageLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(5);
     const [totalItems, setTotalItems] = useState(0);
@@ -143,6 +144,7 @@ const RoomsPage = () => {
     };
 
     const handleImageUpload = async ({ file }) => {
+        setImageLoading(true);
         const formData = new FormData();
         formData.append("file", file);
 
@@ -157,6 +159,9 @@ const RoomsPage = () => {
         } catch (error) {
             toast.error("Tải ảnh lên thất bại. Vui lòng thử lại.");
             toast.error("Upload error:", error);
+        }
+        finally {
+            setImageLoading(false);
         }
     };
 
@@ -329,10 +334,12 @@ const RoomsPage = () => {
                     <Form.Item label="Mô tả" name="description">
                         <Input.TextArea rows={4} />
                     </Form.Item>
-                    <Form.Item label="Ảnh" >
-                        <Upload showUploadList={false} beforeUpload={() => false} onChange={handleImageUpload}>
-                            <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
-                        </Upload>
+                    <Form.Item label="Ảnh">
+                        <Spin spinning={imageLoading}>
+                            <Upload showUploadList={false} beforeUpload={() => false} onChange={handleImageUpload}>
+                                <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+                            </Upload>
+                        </Spin>
                         {imageUrl && <img src={imageUrl} alt="Preview" style={{ width: 100, height: 100, marginTop: 10 }} />}
                     </Form.Item>
                 </Form>
