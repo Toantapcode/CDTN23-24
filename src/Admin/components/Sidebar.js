@@ -99,7 +99,9 @@ const Sidebar = ({ onMenuClick }) => {
         },
     ];
 
-    const filteredMenuItems = userRole === 'ADMIN'
+    const filteredMenuItems = userRole === 'SUADMIN'
+        ? menuItems.filter(item => item.key === 'user' || item.key === 'logout')
+        : userRole === 'ADMIN'
         ? menuItems.filter(item => item.key !== 'user')
         : menuItems;
 

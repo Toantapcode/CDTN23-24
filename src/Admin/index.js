@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
@@ -14,7 +14,19 @@ import Rate from './pages/Rate'
 import StatusRoomToday from './pages/StatusRoomToDay';
 
 export default function Admin() {
-    const [content, setContent] = useState('dashboard');
+    let userRole = null;
+    try {
+        const userData = localStorage.getItem('User: ');
+        if (userData) {
+            const parsedData = JSON.parse(userData);
+            userRole = Array.isArray(parsedData.roles) ? parsedData.roles[0] : parsedData.roles;
+            console.log(userRole)
+        }
+    } catch (error) {
+        console.error('Error parsing userData:', error);
+    }
+
+    const [content, setContent] = useState(userRole === 'SUADMIN' ? 'usermanagement' : 'dashboard');
 
     const renderContent = () => {
         switch (content) {
