@@ -110,8 +110,8 @@ const BookingPage = () => {
     const mapRef = useRef(null);
     const markerRef = useRef(null);
     const leafletMapRef = useRef(null);
-    
-    
+
+
     const [vouchers, setVouchers] = useState([]);
     const [selectedVoucher, setSelectedVoucher] = useState(savedFormData.selectedVoucher || null);
     const [showVoucherModal, setShowVoucherModal] = useState(false);
@@ -323,7 +323,7 @@ const BookingPage = () => {
         console.log(basePrice)
         const discount = selectedVoucher && selectedVoucher.percent ? (basePrice * selectedVoucher.percent) / 100 : 0;
         const discountedPrice = basePrice - discount;
-        return discountedPrice + (discountedPrice * 0.15);
+        return Math.floor(discountedPrice + (discountedPrice * 0.15));
     })();
     console.log(totalPrice)
 
@@ -468,9 +468,11 @@ const BookingPage = () => {
                 return { id: serviceId };
             }),
             voucherId: selectedVoucher ? selectedVoucher.id : null,
+            discount:selectedVoucher?.percent
         };
 
         try {
+            console.log(bookingData)
             const response = await axiosInstance.post(
                 `/booking/bookRoom/${selectedRoomId}/${userId}`,
                 bookingData
